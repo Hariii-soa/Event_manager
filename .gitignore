@@ -1,0 +1,19 @@
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build React
+/frontend/build
+
+# Logs
+*.log
+
+# Env files
+/backend/.env
+/frontend/.env
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store

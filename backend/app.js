@@ -1,42 +1,26 @@
-
-// app.js
-require('dotenv').config(); 
+// Dans votre app.js principal
 const express = require('express');
 const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const authRoutes = require('./routes/authRoutes'); 
+const authRoutes = require('./routes/authRoutes');
+const evenementRoutes = require('./routes/evenementRoutes');
+const path = require('path');
 
 const app = express();
 
-// Middleware de sécurité
+// Middlewares
 app.use(cors());
-app.use(helmet());
-app.use(express.json()); // Pour parser le JSON
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-const passport = require('passport');
-require('./config/passport');
-
-app.use(passport.initialize());
-
-// Limiter les requêtes pour éviter les abus
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limite chaque IP à 100 requêtes par fenêtre
-});
-app.use(limiter);
+// Servir les fichiers statiques (images uploadées)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/evenements', evenementRoutes);
 
-// Gestion des erreurs
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Erreur interne du serveur.' });
-});
-
-// Port d'écoute
-const PORT = process.env.PORT || 3000; // Port de ton serveur Node.js
+// Démarrage du serveur
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);
 });

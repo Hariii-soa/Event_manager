@@ -1,17 +1,5 @@
 @import 'tailwindcss';
 
-@theme {
-  /* Couleurs personnalisées Evenia */
-  --color-evenia-pink: #ec4899;
-  --color-evenia-blue: #60a5fa;
-  --color-evenia-green: #ecfccb;
-  
-  /* Variantes optionnelles (hover, focus, etc.) */
-  --color-evenia-pink-dark: #db2777;
-  --color-evenia-blue-dark: #3b82f6;
-  --color-evenia-green-dark: #d9f99d;
-}
-
 
 
 /** {

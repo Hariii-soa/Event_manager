@@ -14,11 +14,11 @@ class Utilisateur {
     const query = `
       INSERT INTO utilisateur (nom, prenom, email, tel, mot_de_passe)
       VALUES ($1, $2, $3, $4, $5)
-      RETURNING id_utilisateur, nom, prenom, email
+      RETURNING *
     `;
     const values = [nom, prenom, email, tel, hashedPassword];
     const { rows } = await db.query(query, values);
-    return rows[0];
+    return rows[0]; // Retourne l'objet complet avec id_utilisateur
   }
 }
 

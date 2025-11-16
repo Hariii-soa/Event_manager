@@ -2,6 +2,7 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const Utilisateur = require('../models/utilisateurModel');
+const AuthService = require('../services/authService');
 
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
@@ -9,34 +10,29 @@ passport.use(new GoogleStrategy({
   callbackURL: '/api/auth/google/callback'
 }, async (accessToken, refreshToken, profile, done) => {
   try {
-    // Cherche l'utilisateur par email Google
-    let user = await Utilisateur.findByEmail(profile.emails[0].value);
-    
+    console.log('Google profile:', profile); // DEBUG
+
+    const email = profile.emails[0].value;
+    let user = await Utilisateur.findByEmail(email);
+
     if (!user) {
-      // Crée un nouvel utilisateur si inexistant (remplis les champs manquants par défaut)
+      // Crée un utilisateur si inexistant
       user = await Utilisateur.create(
-        profile.name.familyName || '',  
-        profile.name.givenName || '',   
-        profile.emails[0].value,               
-        profile.phone || '',                   
-        'google-auth'                          // mot de passe dummy (pas utilisé pour Google)
+        profile.name.familyName || 'Inconnu',
+        profile.name.givenName || 'Inconnu',
+        email,
+        '', // tel vide
+        Math.random().toString() // mot de passe aléatoire (non utilisé)
       );
     }
-    
-    // Retourne l'utilisateur sans mot de passe
-    const userProfile = { ...user };
-    delete userProfile.mot_de_passe;
-    
-    done(null, userProfile);
+
+    // Retourne l'utilisateur SANS mot_de_passe
+    const { mot_de_passe, ...safeUser } = user;
+    done(null, safeUser); // ← IMPORTANT : passe safeUser
   } catch (error) {
-    console.error(error);
+    console.error('Erreur Google Strategy:', error);
     done(error, null);
   }
 }));
 
-// Sérialisation pour la session (optionnel, car on utilise JWT)
-passport.serializeUser((user, done) => done(null, user.id_utilisateur));
-passport.deserializeUser(async (id, done) => {
-  // Ici, tu peux fetch l'utilisateur complet si besoin
-  done(null, { id });
-});
+module.exports = passport;

@@ -1,27 +1,45 @@
 // src/App.jsx
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './context/useAuth';
+import { useAuth } from '@/context/useAuth';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
-import DashboardHome from './pages/DashboardHome';
+import MesEvenementsPage from './pages/MesEvenementsPage';
 import DashboardLayout from './components/layout/DashboardLayout';
 
-// Route protégée
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
   return user ? children : <Navigate to="/login" replace />;
+};
+
+const PublicRoute = ({ children }) => {
+  const { user } = useAuth();
+  return user ? <Navigate to="/" replace /> : children;
 };
 
 function App() {
   return (
     <Routes>
       {/* Pages publiques */}
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/login" element={<LoginPage />} />
+      <Route 
+        path="/register" 
+        element={
+          <PublicRoute>
+            <RegisterPage />
+          </PublicRoute>
+        } 
+      />
+      <Route 
+        path="/login" 
+        element={
+          <PublicRoute>
+            <LoginPage />
+          </PublicRoute>
+        } 
+      />
 
-      {/* Page d'accueil avec sidebar visible */}
+      {/* Page d'accueil */}
       <Route
         path="/"
         element={
@@ -31,7 +49,7 @@ function App() {
         }
       />
 
-      {/* Dashboard avec sidebar */}
+      {/* Dashboard */}
       <Route
         path="/dashboard"
         element={
@@ -40,11 +58,10 @@ function App() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<DashboardHome />} />
-        {/* Autres pages du dashboard */}
+        {/* CORRECTION: Mes événements est la page principale d'Organiser */}
+        <Route path="mes-evenements" element={<MesEvenementsPage />} />
       </Route>
 
-      {/* Redirection */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

@@ -10,7 +10,7 @@ const DashboardHome = () => {
     <div className="mx-auto max-w-7xl">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-800">Mes Événements</h1>
-        <p className="text-sm text-gray-600">Gérez tous vos événements organisés</p>
+        <p className="text-sm text-gray-600">Gérez tous vos événements organisés, {user?.name || 'Utilisateur'} !</p>
       </div>
 
       <div className="flex items-center justify-between mb-6">

@@ -10,8 +10,12 @@ const AuthLayout = ({ children, sideContent }) => {
       <div className="flex flex-col justify-center w-1/2 p-12 bg-white">
         <div className="w-full max-w-md mx-auto">
           {/* Logo PNG */}
-          <div className="mb-8">
-            <img src="logo.png" alt="Evenia" className="h-24" />
+          <div className="flex items-center space-x-3 mb-12">
+            <img src="/logo.png" alt="Evenia" className="w-20 h-20" />
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Evenia</h1>
+              <p className="text-lg text-gray-500">Gestion d'événements</p>
+            </div>
           </div>
           {children}
         </div>

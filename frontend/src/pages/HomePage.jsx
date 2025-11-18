@@ -15,8 +15,8 @@ const HomePage = () => {
     },
     {
       id: 2,
+      badge: 'Conférences',
       title: 'Conférence Tech 2024',
-      code: 'Code: EVT001',
       description: 'Une conférence sur les dernières technologies...',
       date: '15 décembre 2024',
       location: 'Centre de Conférences, Paris',
@@ -25,8 +25,8 @@ const HomePage = () => {
     },
     {
       id: 3,
+      badge: 'Ateliers',
       title: 'Atelier Design UX/UI',
-      code: 'Code: EVT002',
       description: 'Un atelier pratique pour apprendre...',
       date: '30 novembre 2024',
       location: 'Studio Créatif, Lyon',
@@ -35,7 +35,6 @@ const HomePage = () => {
     },
   ];
 
-  // Sécurité : si slide inexistant → fallback
   const currentSlideData = slides[currentSlide] || slides[0];
   const isFirstSlide = currentSlide === 0;
 
@@ -66,7 +65,6 @@ const HomePage = () => {
           {/* Carrousel */}
           <div className="relative max-w-5xl mx-auto mb-12 sm:mb-16 lg:mb-20">
             <div className="relative h-[300px] sm:h-[400px] lg:h-[500px] rounded-2xl lg:rounded-3xl overflow-hidden shadow-xl lg:shadow-2xl">
-              {/* Protection contre image undefined */}
               {currentSlideData.image ? (
                 <img
                   src={currentSlideData.image}
@@ -93,16 +91,15 @@ const HomePage = () => {
                     <p className="text-sm sm:text-base lg:text-lg mb-4 sm:mb-8 max-w-2xl opacity-90">
                       {currentSlideData.description}
                     </p>
-                    <button className="px-4 sm:px-6 lg:px-8 py-2 sm:py-2.5 lg:py-3 bg-pink-500 hover:bg-pink-600 text-white font-medium rounded-lg lg:rounded-xl transition text-sm sm:text-base">
-                      Découvrez maintenant
-                    </button>
                   </>
                 ) : (
                   <>
-                    <h2 className="text-xl sm:text-2xl lg:text-4xl font-bold mb-1 sm:mb-2 max-w-3xl">
+                    <span className="inline-block px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 backdrop-blur-sm rounded-full text-xs sm:text-sm font-medium mb-2 sm:mb-4">
+                      {currentSlideData.badge}
+                    </span>
+                    <h2 className="text-xl sm:text-2xl lg:text-4xl font-bold mb-2 sm:mb-3 max-w-3xl">
                       {currentSlideData.title}
                     </h2>
-                    <p className="text-xs sm:text-sm opacity-80 mb-2 sm:mb-3">{currentSlideData.code}</p>
                     <p className="text-sm sm:text-base lg:text-lg mb-2 sm:mb-4 max-w-2xl opacity-90">
                       {currentSlideData.description}
                     </p>
@@ -110,28 +107,26 @@ const HomePage = () => {
                       {currentSlideData.date} • {currentSlideData.location}
                     </p>
 
-                    <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-6 max-w-md">
-                      <div className="flex-1 h-1.5 sm:h-2 bg-white/30 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-pink-500 rounded-full transition-all"
-                          style={{
-                            width: `${(currentSlideData.participants.current / currentSlideData.participants.total) * 100}%`,
-                          }}
-                        ></div>
+                    {currentSlideData.participants && (
+                      <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-6 max-w-md">
+                        <div className="flex-1 h-1.5 sm:h-2 bg-white/30 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-pink-500 rounded-full transition-all"
+                            style={{
+                              width: `${(currentSlideData.participants.current / currentSlideData.participants.total) * 100}%`,
+                            }}
+                          ></div>
+                        </div>
+                        <span className="text-xs sm:text-sm whitespace-nowrap opacity-80">
+                          {currentSlideData.participants.current}/{currentSlideData.participants.total} participants
+                        </span>
                       </div>
-                      <span className="text-xs sm:text-sm whitespace-nowrap opacity-80">
-                        {currentSlideData.participants.current}/{currentSlideData.participants.total} participants
-                      </span>
-                    </div>
-
-                    <button className="px-4 sm:px-6 lg:px-8 py-2 sm:py-2.5 lg:py-3 bg-pink-500 hover:bg-pink-600 text-white font-medium rounded-lg lg:rounded-xl transition text-sm sm:text-base">
-                      Voir les détails
-                    </button>
+                    )}
                   </>
                 )}
               </div>
 
-              {/* Navigation - Boutons précédent/suivant */}
+              {/* Navigation */}
               <button
                 onClick={prevSlide}
                 className="absolute left-2 sm:left-4 lg:left-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full flex items-center justify-center text-white text-xl sm:text-2xl transition"
@@ -145,7 +140,7 @@ const HomePage = () => {
                 →
               </button>
 
-              {/* Dots - Indicateurs de slides */}
+              {/* Dots */}
               <div className="absolute bottom-3 sm:bottom-4 lg:bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2">
                 {slides.map((_, index) => (
                   <button

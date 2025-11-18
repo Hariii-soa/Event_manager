@@ -1,3 +1,4 @@
+// src/context/useAuth.js
 import { useContext } from 'react';
 import { AuthContext } from './AuthContext';
 
@@ -8,3 +9,6 @@ export const useAuth = () => {
   }
   return context;
 };
+
+// Export par défaut pour compatibilité
+export default useAuth;

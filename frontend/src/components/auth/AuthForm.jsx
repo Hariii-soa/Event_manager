@@ -1,7 +1,7 @@
 // src/components/auth/AuthForm.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '@/context/useAuth';
+import { useAuth } from '@/context/AuthContext';
 
 const AuthForm = ({ type }) => {
   const [formData, setFormData] = useState({
@@ -29,15 +29,20 @@ const AuthForm = ({ type }) => {
     if (token && userStr) {
       try {
         const user = JSON.parse(decodeURIComponent(userStr));
-        login(user, token);
-        window.history.replaceState({}, document.title, window.location.pathname);
-        navigate('/');
-      } catch (err) {
-        console.error('Erreur lors du parsing des données OAuth:', err);
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        // Nettoyer l'URL
+        window.history.replaceState({}, document.title, '/');
+        
+        // Rediriger
+        window.location.href = '/dashboard/mes-evenements';
+      } catch (error) {
+        console.error('Erreur parsing user:', error);
         setError('Erreur lors de la connexion avec Google');
       }
     }
-  }, [login, navigate]);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -93,6 +98,7 @@ const AuthForm = ({ type }) => {
           throw new Error(data.error || 'Échec de la connexion');
         }
 
+         // ✅ Utiliser login avec le bon ordre : userData, token
         login(data.user, data.token);
         navigate('/');
       } catch (err) {

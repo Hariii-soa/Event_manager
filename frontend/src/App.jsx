@@ -1,18 +1,20 @@
 // src/App.jsx
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '@/context/useAuth';
+import { useAuth } from '@/context/AuthContext';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import MesEvenementsPage from './pages/MesEvenementsPage';
-import DashboardLayout from './components/layout/DashboardLayout';
+import EventDetailsPage from './pages/EventDetailsPage';
 
+// Route protégée
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
   return user ? children : <Navigate to="/login" replace />;
 };
 
+// Route publique
 const PublicRoute = ({ children }) => {
   const { user } = useAuth();
   return user ? <Navigate to="/" replace /> : children;
@@ -39,7 +41,7 @@ function App() {
         } 
       />
 
-      {/* Page d'accueil */}
+      {/* Page d'accueil - avec le carrousel (Image 2) */}
       <Route
         path="/"
         element={
@@ -49,19 +51,27 @@ function App() {
         }
       />
 
-      {/* Dashboard */}
+      {/* Page Mes Événements - accessible via bouton "Organiser" dans sidebar */}
       <Route
-        path="/dashboard"
+        path="/dashboard/mes-evenements"
         element={
           <ProtectedRoute>
-            <DashboardLayout />
+            <MesEvenementsPage />
           </ProtectedRoute>
         }
-      >
-        {/* CORRECTION: Mes événements est la page principale d'Organiser */}
-        <Route path="mes-evenements" element={<MesEvenementsPage />} />
-      </Route>
+      />
 
+      {/* Page de détails d'événement */}
+      <Route
+        path="/dashboard/evenement/:id"
+        element={
+          <ProtectedRoute>
+            <EventDetailsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Redirection par défaut */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

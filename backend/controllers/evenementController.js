@@ -32,176 +32,194 @@ const upload = multer({
   }
 });
 
-class EvenementController {
-  // Middleware pour vérifier si l'utilisateur est admin
-  static async verifyAdmin(req, res, next) {
-    try {
-      const userId = req.user.id;
-      
-      // Récupérer l'utilisateur depuis la base de données
-      const query = 'SELECT email FROM utilisateur WHERE id_utilisateur = $1';
-      const db = require('../config/db');
-      const { rows } = await db.query(query, [userId]);
-      
-      if (!rows[0]) {
-        return res.status(404).json({ error: 'Utilisateur non trouvé' });
-      }
-      
-      // Vérifier si c'est l'admin
-      if (rows[0].email !== ADMIN_EMAIL) {
-        return res.status(403).json({ 
-          error: 'Accès refusé. Seul l\'administrateur peut créer des événements.' 
-        });
-      }
-      
-      next();
-    } catch (error) {
-      console.error('Erreur verifyAdmin:', error);
-      res.status(500).json({ error: 'Erreur de vérification des permissions' });
+// Middleware pour vérifier si l'utilisateur est admin
+const verifyAdmin = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    
+    // Récupérer l'utilisateur depuis la base de données
+    const query = 'SELECT email FROM utilisateur WHERE id_utilisateur = $1';
+    const db = require('../config/db');
+    const { rows } = await db.query(query, [userId]);
+    
+    if (!rows[0]) {
+      return res.status(404).json({ error: 'Utilisateur non trouvé' });
     }
-  }
-
-  // Récupérer tous les événements de l'organisateur
-  static async getMesEvenements(req, res) {
-    try {
-      const id_utilisateur = req.user.id;
-      const evenements = await Evenement.findByOrganisateur(id_utilisateur);
-      
-      res.status(200).json(evenements);
-    } catch (error) {
-      console.error('Erreur getMesEvenements:', error);
-      res.status(500).json({ error: 'Erreur lors de la récupération des événements' });
-    }
-  }
-
-  // Récupérer un événement par ID
-  static async getEvenementById(req, res) {
-    try {
-      const { id } = req.params;
-      const evenement = await Evenement.findById(id);
-      
-      if (!evenement) {
-        return res.status(404).json({ error: 'Événement non trouvé' });
-      }
-      
-      res.status(200).json(evenement);
-    } catch (error) {
-      console.error('Erreur getEvenementById:', error);
-      res.status(500).json({ error: 'Erreur lors de la récupération de l\'événement' });
-    }
-  }
-
-  // Créer un nouvel événement
-  static async createEvenement(req, res) {
-    try {
-      const id_utilisateur = req.user.id;
-      const evenementData = req.body;
-      
-      console.log('📝 Données reçues:', evenementData);
-      console.log('🖼️ Fichier reçu:', req.file);
-      
-      // Validation des champs requis
-      if (!evenementData.code_evenement || !evenementData.titre || 
-          !evenementData.date_evenement || !evenementData.lieu || 
-          !evenementData.nombre_places) {
-        return res.status(400).json({ 
-          error: 'Tous les champs obligatoires doivent être remplis' 
-        });
-      }
-      
-      // Ajouter l'URL de l'image si elle a été uploadée
-      if (req.file) {
-        evenementData.image_url = `/uploads/evenements/${req.file.filename}`;
-        console.log('✅ Image URL:', evenementData.image_url);
-      }
-      
-      const nouvelEvenement = await Evenement.create(evenementData, id_utilisateur);
-      
-      console.log('✅ Événement créé:', nouvelEvenement);
-      
-      res.status(201).json({
-        message: 'Événement créé avec succès',
-        evenement: nouvelEvenement
-      });
-    } catch (error) {
-      console.error('❌ Erreur createEvenement:', error);
-      
-      // Gestion des erreurs spécifiques
-      if (error.code === '23505') {
-        return res.status(400).json({ 
-          error: 'Ce code d\'événement existe déjà' 
-        });
-      }
-      
-      res.status(500).json({ 
-        error: 'Erreur lors de la création de l\'événement',
-        details: error.message 
+    
+    // Vérifier si c'est l'admin
+    if (rows[0].email !== ADMIN_EMAIL) {
+      return res.status(403).json({ 
+        error: 'Accès refusé. Seul l\'administrateur peut créer des événements.' 
       });
     }
+    
+    next();
+  } catch (error) {
+    console.error('Erreur verifyAdmin:', error);
+    res.status(500).json({ error: 'Erreur de vérification des permissions' });
   }
+};
 
-  // Mettre à jour un événement
-  static async updateEvenement(req, res) {
-    try {
-      const { id } = req.params;
-      const id_utilisateur = req.user.id;
-      const evenementData = req.body;
-      
-      // Vérifier que l'utilisateur est bien l'organisateur
-      const isOrganisateur = await Evenement.isOrganisateur(id, id_utilisateur);
-      if (!isOrganisateur) {
-        return res.status(403).json({ error: 'Non autorisé à modifier cet événement' });
-      }
-      
-      // Ajouter l'URL de l'image si elle a été uploadée
-      if (req.file) {
-        evenementData.image_url = `/uploads/evenements/${req.file.filename}`;
-      }
-      
-      const evenementMisAJour = await Evenement.update(id, evenementData);
-      
-      if (!evenementMisAJour) {
-        return res.status(404).json({ error: 'Événement non trouvé' });
-      }
-      
-      res.status(200).json({
-        message: 'Événement mis à jour avec succès',
-        evenement: evenementMisAJour
+// Récupérer tous les événements de l'organisateur
+const getMesEvenements = async (req, res) => {
+  try {
+    const id_utilisateur = req.user.id;
+    console.log('📋 Récupération des événements pour l\'utilisateur:', id_utilisateur);
+    
+    const evenements = await Evenement.findByOrganisateur(id_utilisateur);
+    
+    console.log('✅ Événements trouvés:', evenements.length);
+    res.status(200).json(evenements);
+  } catch (error) {
+    console.error('❌ Erreur getMesEvenements:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération des événements' });
+  }
+};
+
+// Récupérer un événement par ID
+const getEvenementById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log('🔍 Récupération de l\'événement ID:', id);
+    
+    const evenement = await Evenement.findById(id);
+    
+    if (!evenement) {
+      return res.status(404).json({ error: 'Événement non trouvé' });
+    }
+    
+    console.log('✅ Événement trouvé:', evenement.titre);
+    res.status(200).json(evenement);
+  } catch (error) {
+    console.error('❌ Erreur getEvenementById:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération de l\'événement' });
+  }
+};
+
+// Créer un nouvel événement
+const createEvenement = async (req, res) => {
+  try {
+    const id_utilisateur = req.user.id;
+    const evenementData = req.body;
+    
+    console.log('📝 Données reçues:', evenementData);
+    console.log('🖼️ Fichier reçu:', req.file);
+    
+    // Validation des champs requis
+    if (!evenementData.code_evenement || !evenementData.titre || 
+        !evenementData.date_evenement || !evenementData.lieu || 
+        !evenementData.nombre_places) {
+      return res.status(400).json({ 
+        error: 'Tous les champs obligatoires doivent être remplis' 
       });
-    } catch (error) {
-      console.error('Erreur updateEvenement:', error);
-      res.status(500).json({ error: 'Erreur lors de la mise à jour de l\'événement' });
     }
-  }
-
-  // Supprimer un événement
-  static async deleteEvenement(req, res) {
-    try {
-      const { id } = req.params;
-      const id_utilisateur = req.user.id;
-      
-      // Vérifier que l'utilisateur est bien l'organisateur
-      const isOrganisateur = await Evenement.isOrganisateur(id, id_utilisateur);
-      if (!isOrganisateur) {
-        return res.status(403).json({ error: 'Non autorisé à supprimer cet événement' });
-      }
-      
-      const evenementSupprime = await Evenement.delete(id);
-      
-      if (!evenementSupprime) {
-        return res.status(404).json({ error: 'Événement non trouvé' });
-      }
-      
-      res.status(200).json({ message: 'Événement supprimé avec succès' });
-    } catch (error) {
-      console.error('Erreur deleteEvenement:', error);
-      res.status(500).json({ error: 'Erreur lors de la suppression de l\'événement' });
+    
+    // Ajouter l'URL de l'image si elle a été uploadée
+    if (req.file) {
+      evenementData.image_url = `/uploads/evenements/${req.file.filename}`;
+      console.log('✅ Image URL:', evenementData.image_url);
     }
+    
+    const nouvelEvenement = await Evenement.create(evenementData, id_utilisateur);
+    
+    console.log('✅ Événement créé:', nouvelEvenement);
+    
+    res.status(201).json({
+      message: 'Événement créé avec succès',
+      evenement: nouvelEvenement
+    });
+  } catch (error) {
+    console.error('❌ Erreur createEvenement:', error);
+    
+    // Gestion des erreurs spécifiques
+    if (error.code === '23505') {
+      return res.status(400).json({ 
+        error: 'Ce code d\'événement existe déjà' 
+      });
+    }
+    
+    res.status(500).json({ 
+      error: 'Erreur lors de la création de l\'événement',
+      details: error.message 
+    });
   }
-}
+};
 
-// Export du controller et du middleware upload
+// Mettre à jour un événement
+const updateEvenement = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const id_utilisateur = req.user.id;
+    const evenementData = req.body;
+    
+    console.log('📝 Mise à jour événement ID:', id);
+    
+    // Vérifier que l'utilisateur est bien l'organisateur
+    const isOrganisateur = await Evenement.isOrganisateur(id, id_utilisateur);
+    if (!isOrganisateur) {
+      return res.status(403).json({ error: 'Non autorisé à modifier cet événement' });
+    }
+    
+    // Ajouter l'URL de l'image si elle a été uploadée
+    if (req.file) {
+      evenementData.image_url = `/uploads/evenements/${req.file.filename}`;
+      console.log('✅ Nouvelle image URL:', evenementData.image_url);
+    }
+    
+    const evenementMisAJour = await Evenement.update(id, evenementData);
+    
+    if (!evenementMisAJour) {
+      return res.status(404).json({ error: 'Événement non trouvé' });
+    }
+    
+    console.log('✅ Événement mis à jour:', evenementMisAJour.titre);
+    
+    res.status(200).json({
+      message: 'Événement mis à jour avec succès',
+      evenement: evenementMisAJour
+    });
+  } catch (error) {
+    console.error('❌ Erreur updateEvenement:', error);
+    res.status(500).json({ error: 'Erreur lors de la mise à jour de l\'événement' });
+  }
+};
+
+// Supprimer un événement
+const deleteEvenement = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const id_utilisateur = req.user.id;
+    
+    console.log('🗑️ Suppression événement ID:', id);
+    
+    // Vérifier que l'utilisateur est bien l'organisateur
+    const isOrganisateur = await Evenement.isOrganisateur(id, id_utilisateur);
+    if (!isOrganisateur) {
+      return res.status(403).json({ error: 'Non autorisé à supprimer cet événement' });
+    }
+    
+    const evenementSupprime = await Evenement.delete(id);
+    
+    if (!evenementSupprime) {
+      return res.status(404).json({ error: 'Événement non trouvé' });
+    }
+    
+    console.log('✅ Événement supprimé');
+    
+    res.status(200).json({ message: 'Événement supprimé avec succès' });
+  } catch (error) {
+    console.error('❌ Erreur deleteEvenement:', error);
+    res.status(500).json({ error: 'Erreur lors de la suppression de l\'événement' });
+  }
+};
+
+// Export des fonctions et du middleware upload
 module.exports = {
-  EvenementController,
+  verifyAdmin,
+  getMesEvenements,
+  getEvenementById,
+  createEvenement,
+  updateEvenement,
+  deleteEvenement,
   uploadEvenementImage: upload.single('image')
 };

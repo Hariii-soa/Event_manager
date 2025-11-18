@@ -18,7 +18,13 @@ class Utilisateur {
     `;
     const values = [nom, prenom, email, tel, hashedPassword];
     const { rows } = await db.query(query, values);
-    return rows[0]; // Retourne l'objet complet avec id_utilisateur
+    return rows[0];
+  }
+
+  static async findById(id) {
+    const query = 'SELECT * FROM utilisateur WHERE id_utilisateur = $1';
+    const { rows } = await db.query(query, [id]);
+    return rows[0];
   }
 }
 

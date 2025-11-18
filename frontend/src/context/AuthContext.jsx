@@ -1,67 +1,73 @@
 // src/context/AuthContext.jsx
-import React, { createContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
-export const AuthContext = createContext(null);
+// Créer le contexte
+ const AuthContext = createContext();
 
-const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Charger les données d'authentification depuis localStorage au démarrage
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('token');
-
-    if (storedUser && storedToken) {
+    // Vérifier si un utilisateur est déjà connecté
+    const checkAuth = () => {
       try {
-        setUser(JSON.parse(storedUser));
-        setToken(storedToken);
+        const token = localStorage.getItem('token');
+        const storedUser = localStorage.getItem('user');
+        
+        if (token && storedUser) {
+          setUser(JSON.parse(storedUser));
+          console.log('✅ Utilisateur restauré:', JSON.parse(storedUser).email);
+        }
       } catch (error) {
-        console.error('Erreur lors du chargement des données d\'authentification:', error);
-        localStorage.removeItem('user');
+        console.error('❌ Erreur vérification auth:', error);
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      } finally {
+        setLoading(false);
       }
-    }
-    setLoading(false);
+    };
+
+    checkAuth();
   }, []);
 
-  // Fonction de connexion
-  const login = (userData, authToken) => {
-    setUser(userData);
-    setToken(authToken);
+  const login = (userData, token) => {
+    localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('token', authToken);
+    setUser(userData);
+    console.log('✅ Utilisateur connecté:', userData.email);
   };
 
-  // Fonction de déconnexion
   const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('user');
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    console.log('✅ Utilisateur déconnecté');
   };
 
-  // Fonction de mise à jour de l'utilisateur
-  const updateUser = (userData) => {
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
-  };
-
-  const value = {
-    user,
-    token,
-    loading,
-    login,
-    logout,
-    updateUser,
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mb-4"></div>
+          <p className="text-gray-600">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
+      {children}
     </AuthContext.Provider>
   );
 };
 
-export default AuthProvider;
+// Hook personnalisé pour utiliser le contexte
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth doit être utilisé dans un AuthProvider');
+  }
+  return context;
+};

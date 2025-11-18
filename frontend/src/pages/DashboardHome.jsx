@@ -1,7 +1,7 @@
 // src/pages/DashboardHome.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/context/useAuth';
+import { useAuth } from '@/context/AuthContext';
 
 const DashboardHome = () => {
   const { user } = useAuth();

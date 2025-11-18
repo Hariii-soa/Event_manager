@@ -1,8 +1,9 @@
 // src/pages/MesEvenementsPage.jsx
 import React, { useState, useEffect } from 'react';
-import EventCreationModal from '../components/modal/EventCreationModal';
+import CreateEventModal from '../components/modal/EventCreationModal';
 
 const MesEvenementsPage = () => {
+  // Récupérer le token depuis localStorage
   const getToken = () => {
     try {
       return localStorage.getItem('token');
@@ -17,8 +18,10 @@ const MesEvenementsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [eventToDelete, setEventToDelete] = useState(null);
+  const [error, setError] = useState('');
   const token = getToken();
 
+  // Charger les événements depuis l'API
   useEffect(() => {
     fetchEvents();
   }, []);
@@ -26,37 +29,51 @@ const MesEvenementsPage = () => {
   const fetchEvents = async () => {
     if (!token) {
       console.error('Token manquant');
+      setError('Vous devez être connecté pour voir vos événements');
       setIsLoading(false);
       return;
     }
 
     try {
       setIsLoading(true);
+      setError('');
+      
+      console.log('🔍 Chargement des événements...');
+      console.log('🔑 Token:', token ? 'Présent' : 'Absent');
+      
       const response = await fetch('http://localhost:3000/api/evenements/mes-evenements', {
+        method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
 
+      console.log('📡 Réponse statut:', response.status);
+
       if (!response.ok) {
-        throw new Error('Erreur lors du chargement des événements');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erreur lors du chargement des événements');
       }
 
       const data = await response.json();
-      console.log('📊 Événements récupérés:', data);
+      console.log('✅ Événements récupérés:', data);
       setEvents(data);
     } catch (error) {
-      console.error('❌ Erreur:', error);
+      console.error('❌ Erreur fetchEvents:', error);
+      setError(error.message);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Filtrer les événements selon la recherche
   const filteredEvents = events.filter(event =>
-    event.titre.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    event.code_evenement.toLowerCase().includes(searchQuery.toLowerCase())
+    event.titre?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    event.code_evenement?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Fonction pour déterminer le badge de statut
   const getStatusBadge = (dateEvenement) => {
     const eventDate = new Date(dateEvenement);
     const now = new Date();
@@ -72,16 +89,19 @@ const MesEvenementsPage = () => {
     }
   };
 
+  // Fonction pour formater la date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
     return date.toLocaleDateString('fr-FR', options);
   };
 
+  // Fonction pour calculer le pourcentage de remplissage
   const getParticipationPercentage = (current, total) => {
     return Math.round((current / total) * 100);
   };
 
+  // Fonction pour supprimer un événement
   const handleDeleteEvent = async (eventId) => {
     try {
       const response = await fetch(`http://localhost:3000/api/evenements/${eventId}`, {
@@ -95,13 +115,16 @@ const MesEvenementsPage = () => {
         throw new Error('Erreur lors de la suppression');
       }
 
+      // Recharger les événements
       fetchEvents();
       setEventToDelete(null);
     } catch (error) {
       console.error('Erreur:', error);
+      setError(error.message);
     }
   };
 
+  // Fonction pour voir les détails
   const handleViewDetails = (eventId) => {
     window.location.href = `/dashboard/evenement/${eventId}`;
   };
@@ -127,12 +150,23 @@ const MesEvenementsPage = () => {
 
       {/* Section principale */}
       <div className="px-8 py-8">
+        {/* Message d'erreur si présent */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+            {error}
+          </div>
+        )}
+
+        {/* En-tête avec compteur et recherche */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-1">Mes Événements</h2>
-            <p className="text-gray-600">{filteredEvents.length} événement{filteredEvents.length > 1 ? 's' : ''} créé{filteredEvents.length > 1 ? 's' : ''}</p>
+            <p className="text-gray-600">
+              {filteredEvents.length} événement{filteredEvents.length > 1 ? 's' : ''} créé{filteredEvents.length > 1 ? 's' : ''}
+            </p>
           </div>
           
+          {/* Barre de recherche */}
           <div className="relative">
             <span className="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
               search
@@ -147,6 +181,7 @@ const MesEvenementsPage = () => {
           </div>
         </div>
 
+        {/* Grille des événements */}
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="flex flex-col items-center gap-3">
@@ -184,6 +219,7 @@ const MesEvenementsPage = () => {
                   key={event.id_evenement}
                   className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition overflow-hidden group"
                 >
+                  {/* Image de l'événement */}
                   <div className="relative h-48 overflow-hidden">
                     {event.image_url ? (
                       <img
@@ -197,28 +233,27 @@ const MesEvenementsPage = () => {
                       </div>
                     )}
                     
+                    {/* Badge de statut */}
                     <div className="absolute top-3 left-3">
                       <span className={`px-3 py-1 ${status.color} rounded-full text-xs font-medium backdrop-blur-sm`}>
                         {status.label}
                       </span>
                     </div>
 
-                    <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition">
-                      <button
-                        onClick={() => handleViewDetails(event.id_evenement)}
-                        className="w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center transition"
-                      >
-                        <span className="material-icons text-blue-600 text-sm">edit</span>
-                      </button>
-                      <button
-                        onClick={() => setEventToDelete(event.id_evenement)}
-                        className="w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center transition"
-                      >
-                        <span className="material-icons text-red-600 text-sm">delete</span>
-                      </button>
-                    </div>
+                    {/* Actions (éditer et supprimer) */}
+                    {status.label === 'En cours' && (
+                      <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition">
+                        <button
+                          onClick={() => setEventToDelete(event.id_evenement)}
+                          className="w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center transition"
+                        >
+                          <span className="material-icons text-red-600 text-sm">delete</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
 
+                  {/* Contenu de la carte */}
                   <div className="p-5">
                     <h3 className="text-lg font-bold text-gray-900 mb-1 line-clamp-1">
                       {event.titre}
@@ -229,6 +264,7 @@ const MesEvenementsPage = () => {
                       {event.description}
                     </p>
 
+                    {/* Date et lieu */}
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <span className="material-icons text-base">event</span>
@@ -240,6 +276,7 @@ const MesEvenementsPage = () => {
                       </div>
                     </div>
 
+                    {/* Barre de progression des participants */}
                     <div className="mb-4">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xs text-gray-600 flex items-center gap-1">
@@ -259,7 +296,66 @@ const MesEvenementsPage = () => {
                       </div>
                     </div>
 
+                    {/* Bouton voir les détails */}
                     <button
                       onClick={() => handleViewDetails(event.id_evenement)}
                       className="w-full py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium rounded-lg transition flex items-center justify-center gap-2"
-                    ></button>
+                    >
+                      <span className="material-icons text-sm">visibility</span>
+                      Voir les détails
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Modal de création d'événement */}
+      <CreateEventModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onEventCreated={() => {
+          setIsModalOpen(false);
+          fetchEvents(); // Recharger la liste
+        }}
+      />
+
+      {/* Modal de confirmation de suppression */}
+      {eventToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 m-4">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="material-icons text-red-600">warning</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Supprimer l&apos;événement</h3>
+                <p className="text-sm text-gray-600">
+                  Êtes-vous sûr de vouloir supprimer cet événement ? Cette action est irréversible.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setEventToDelete(null)}
+                className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-medium"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => handleDeleteEvent(eventToDelete)}
+                className="flex-1 px-4 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-medium"
+              >
+                Supprimer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default MesEvenementsPage;

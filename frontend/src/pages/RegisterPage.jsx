@@ -1,4 +1,4 @@
-// src/pages/RegisterPage.jsx - VERSION RESPONSIVE
+// src/pages/RegisterPage.jsx
 import React from 'react';
 import AuthLayout from '../components/auth/AuthLayout';
 import AuthForm from '../components/auth/AuthForm';

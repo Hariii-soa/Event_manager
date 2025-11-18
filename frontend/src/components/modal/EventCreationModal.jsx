@@ -1,8 +1,9 @@
 // src/components/modal/EventCreationModal.jsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
-const CreateEventModal = ({ isOpen, onClose, onEventCreated }) => {
+const CreateEventModal = ({ isOpen, onClose, onEventCreated, eventToEdit = null }) => {
   const fileInputRef = useRef(null);
+  const isEditMode = !!eventToEdit;
 
   const [formData, setFormData] = useState({
     code_evenement: '',
@@ -18,6 +19,27 @@ const CreateEventModal = ({ isOpen, onClose, onEventCreated }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Initialiser le formulaire avec les données de l'événement en mode édition
+  useEffect(() => {
+    if (eventToEdit) {
+      setFormData({
+        code_evenement: eventToEdit.code_evenement || '',
+        titre: eventToEdit.titre || '',
+        description: eventToEdit.description || '',
+        date_evenement: eventToEdit.date_evenement 
+          ? new Date(eventToEdit.date_evenement).toISOString().slice(0, 16) 
+          : '',
+        lieu: eventToEdit.lieu || '',
+        nombre_places: eventToEdit.nombre_places || ''
+      });
+
+      // Afficher l'image existante
+      if (eventToEdit.image_url) {
+        setImagePreview(`http://localhost:3000${eventToEdit.image_url}`);
+      }
+    }
+  }, [eventToEdit]);
 
   // Récupérer le token depuis localStorage
   const getToken = () => {
@@ -105,13 +127,22 @@ const CreateEventModal = ({ isOpen, onClose, onEventCreated }) => {
       formDataToSend.append('lieu', formData.lieu);
       formDataToSend.append('nombre_places', formData.nombre_places);
       
+      // Ajouter l'image seulement si une nouvelle image a été sélectionnée
       if (imageFile) {
         formDataToSend.append('image', imageFile);
       }
 
+      // Déterminer la méthode et l'URL selon le mode
+      const method = isEditMode ? 'PUT' : 'POST';
+      const url = isEditMode 
+        ? `http://localhost:3000/api/evenements/${eventToEdit.id_evenement}`
+        : 'http://localhost:3000/api/evenements';
+
+      console.log(`📡 ${method} request to:`, url);
+
       // Envoyer la requête
-      const response = await fetch('http://localhost:3000/api/evenements', {
-        method: 'POST',
+      const response = await fetch(url, {
+        method: method,
         headers: {
           'Authorization': `Bearer ${token}`
         },
@@ -121,20 +152,18 @@ const CreateEventModal = ({ isOpen, onClose, onEventCreated }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Erreur lors de la création de l\'événement');
+        throw new Error(data.error || `Erreur lors de ${isEditMode ? 'la modification' : 'la création'} de l'événement`);
       }
 
       // Succès
-      setSuccess('Événement créé avec succès !');
+      setSuccess(isEditMode ? 'Événement modifié avec succès !' : 'Événement créé avec succès !');
       
-      // Attendre 1.5 secondes puis fermer et rediriger
+      // Attendre 1.5 secondes puis fermer et callback
       setTimeout(() => {
-        onClose();
+        handleClose();
         if (onEventCreated) {
           onEventCreated();
         }
-        // Rediriger vers la page de listage
-        window.location.href = '/dashboard/mes-evenements';
       }, 1500);
       
     } catch (err) {
@@ -173,7 +202,7 @@ const CreateEventModal = ({ isOpen, onClose, onEventCreated }) => {
           <div className="flex items-center gap-3">
             <span className="material-icons text-gray-800">event</span>
             <h2 className="text-xl font-bold text-gray-800">
-              Organiser un nouvel événement
+              {isEditMode ? 'Modifier l\'événement' : 'Organiser un nouvel événement'}
             </h2>
           </div>
           <button
@@ -376,10 +405,10 @@ const CreateEventModal = ({ isOpen, onClose, onEventCreated }) => {
               {isLoading ? (
                 <>
                   <span className="material-icons animate-spin text-sm">refresh</span>
-                  Création...
+                  {isEditMode ? 'Modification...' : 'Création...'}
                 </>
               ) : (
-                "Créer l'événement"
+                isEditMode ? "Modifier l'événement" : "Créer l'événement"
               )}
             </button>
           </div>

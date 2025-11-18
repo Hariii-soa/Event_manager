@@ -29,20 +29,40 @@ const validateLogin = [
   },
 ];
 
-// Middleware pour vérifier le token JWT
+// Middleware pour vérifier le token JWT - VERSION CORRIGÉE
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
+  console.log('🔍 Vérification token...');
+  console.log('📋 Authorization header:', authHeader);
+  console.log('🎫 Token extrait:', token ? 'Présent' : 'Absent');
+
   if (!token) {
+    console.log('❌ Token manquant');
     return res.status(401).json({ error: 'Token manquant' });
   }
 
   try {
+    console.log('🔐 JWT Secret:', jwtConfig.secret ? 'Défini' : 'MANQUANT');
+    
     const decoded = jwt.verify(token, jwtConfig.secret);
+    console.log('✅ Token décodé:', decoded);
+    
     req.user = { id: decoded.id }; // Ajoute l'ID utilisateur à la requête
+    console.log('✅ Utilisateur authentifié - ID:', decoded.id);
+    
     next();
   } catch (error) {
+    console.error('❌ Erreur vérification token:', error.message);
+    
+    if (error.name === 'TokenExpiredError') {
+      return res.status(403).json({ error: 'Token expiré' });
+    }
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(403).json({ error: 'Token invalide' });
+    }
+    
     return res.status(403).json({ error: 'Token invalide' });
   }
 };

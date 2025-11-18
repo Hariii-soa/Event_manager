@@ -2,7 +2,6 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const Utilisateur = require('../models/utilisateurModel');
-const AuthService = require('../services/authService');
 
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
@@ -10,27 +9,31 @@ passport.use(new GoogleStrategy({
   callbackURL: '/api/auth/google/callback'
 }, async (accessToken, refreshToken, profile, done) => {
   try {
-    console.log('Google profile:', profile); // DEBUG
+    console.log('🔑 Google profile reçu:', profile.emails[0].value);
 
     const email = profile.emails[0].value;
     let user = await Utilisateur.findByEmail(email);
 
     if (!user) {
-      // Crée un utilisateur si inexistant
+      console.log('👤 Création d\'un nouvel utilisateur...');
+      // Créer un utilisateur si inexistant
       user = await Utilisateur.create(
-        profile.name.familyName || 'Inconnu',
-        profile.name.givenName || 'Inconnu',
+        profile.name.familyName || 'Nom',
+        profile.name.givenName || 'Prénom',
         email,
         '', // tel vide
-        Math.random().toString() // mot de passe aléatoire (non utilisé)
+        Math.random().toString(36).slice(-8) // mot de passe aléatoire
       );
+      console.log('✅ Utilisateur créé:', user.id_utilisateur);
+    } else {
+      console.log('✅ Utilisateur existant:', user.id_utilisateur);
     }
 
-    // Retourne l'utilisateur SANS mot_de_passe
+    // Retourner l'utilisateur SANS mot_de_passe
     const { mot_de_passe, ...safeUser } = user;
-    done(null, safeUser); // ← IMPORTANT : passe safeUser
+    done(null, safeUser);
   } catch (error) {
-    console.error('Erreur Google Strategy:', error);
+    console.error('❌ Erreur Google Strategy:', error);
     done(error, null);
   }
 }));

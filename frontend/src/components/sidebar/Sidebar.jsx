@@ -1,7 +1,7 @@
 // src/components/sidebar/Sidebar.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CreateEventModal from '../modal/EventCreationModal';
+import CreateEventModal from '@/components/modal/EventCreationModal';
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -17,6 +17,11 @@ const Sidebar = () => {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    closeMobileMenu();
   };
 
   return (
@@ -47,13 +52,18 @@ const Sidebar = () => {
       >
         {/* Logo et titre */}
         <div className="p-4 sm:p-6 border-b border-gray-200">
-          <div className="flex items-center gap-3">
-            <div className="w-14 h-14 sm:w-20 sm:h-20 bg-purple-100 rounded-full flex items-center justify-center">
+          <div
+            className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition"
+            onClick={() => {
+              handleNavigation('/');
+            }}
+          >
+            <div className="w-14 h-14 sm:w-20 sm:h-20 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
               <img src="/logo.png" alt="Evenia" className="w-14 h-14 sm:w-20 sm:h-20" />
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Evenia</h1>
-              <p className="text-sm sm:text-base text-gray-500">Gestion d&apos;événements</p>
+              <p className="text-sm sm:text-base text-gray-500">Gestion d'événements</p>
             </div>
           </div>
         </div>
@@ -67,12 +77,13 @@ const Sidebar = () => {
           {/* Pour les organisateurs */}
           <div className="mb-4">
             <p className="text-xs text-gray-600 mb-2">Créez et gérez vos événements</p>
-            
-            {/* Bouton Organiser - Redirige vers /dashboard/mes-evenements */}
+
+            {/* Bouton Organiser - Ouvre le modal de création */}
             <button
               onClick={() => {
-                navigate('/dashboard/mes-evenements');
+                setIsEventModalOpen(true);
                 closeMobileMenu();
+                handleNavigation('/dashboard/mes-evenements')
               }}
               className="w-full flex items-center gap-3 px-4 py-3 bg-pink-50 hover:bg-pink-100 rounded-xl transition mb-2 group"
             >
@@ -84,19 +95,16 @@ const Sidebar = () => {
                 Org.
               </span>
             </button>
-            
-            {/* Bouton Activités */}
+
+            {/* Bouton Activités - Redirige vers mes-evenements */}
             <button
-              onClick={() => {
-                navigate('/dashboard/activites');
-                closeMobileMenu();
-              }}
-              className="w-full flex items-center gap-3 px-3 sm:px-4 py-3 bg-yellow-50 hover:bg-yellow-100 rounded-xl transition"
+              onClick={() => handleNavigation('/dashboard/participer')}
+              className="w-full flex items-center gap-3 px-4 py-3 bg-yellow-50 hover:bg-yellow-100 rounded-xl transition"
             >
               <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                 <span className="material-icons text-yellow-600 text-lg">bolt</span>
               </div>
-              <span className="font-medium text-sm sm:text-base text-gray-800 flex-1 text-left">Activités</span>
+              <span className="font-medium text-gray-800 flex-1 text-left">Activités</span>
               <span className="text-xs bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded-full font-medium">
                 Org.
               </span>
@@ -106,42 +114,34 @@ const Sidebar = () => {
           {/* Pour les participants */}
           <div>
             <p className="text-xs text-gray-600 mb-2">Rejoignez et consultez vos événements</p>
-            
+
             <button
-              onClick={() => {
-                navigate('/dashboard/participer');
-                closeMobileMenu();
-              }}
-              className="w-full flex items-center gap-3 px-3 sm:px-4 py-3 bg-blue-50 hover:bg-blue-100 rounded-xl transition mb-2"
+              onClick={() => handleNavigation('/dashboard/participer')}
+              className="w-full flex items-center gap-3 px-4 py-3 bg-blue-50 hover:bg-blue-100 rounded-xl transition mb-2"
             >
               <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                 <span className="material-icons text-blue-600 text-lg">group</span>
               </div>
-              <span className="font-medium text-sm sm:text-base text-gray-800 flex-1 text-left">Participer</span>
+              <span className="font-medium text-gray-800 flex-1 text-left">Participer</span>
               <span className="text-xs bg-blue-200 text-blue-800 px-2 py-0.5 rounded-full font-medium">
                 Part.
               </span>
             </button>
 
             <button
-              onClick={() => {
-                navigate('/dashboard/consulter');
-                closeMobileMenu();
-              }}
-              className="w-full flex items-center gap-3 px-3 sm:px-4 py-3 bg-purple-50 hover:bg-purple-100 rounded-xl transition"
+              onClick={() => handleNavigation('/dashboard/consulter')}
+              className="w-full flex items-center gap-3 px-4 py-3 bg-purple-50 hover:bg-purple-100 rounded-xl transition"
             >
               <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                 <span className="material-icons text-purple-600 text-lg">description</span>
               </div>
-              <span className="font-medium text-sm sm:text-base text-gray-800 flex-1 text-left">Consulter</span>
+              <span className="font-medium text-gray-800 flex-1 text-left">Consulter</span>
               <span className="text-xs bg-purple-200 text-purple-800 px-2 py-0.5 rounded-full font-medium">
                 Part.
               </span>
             </button>
           </div>
         </div>
-
-        <div className="flex-1"></div>
 
         {/* Bouton déconnexion */}
         <div className="p-4 border-t border-gray-200">
@@ -150,21 +150,21 @@ const Sidebar = () => {
               setIsLogoutModalOpen(true);
               closeMobileMenu();
             }}
-            className="w-full flex items-center gap-3 px-3 sm:px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg transition"
+            className="w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg transition"
           >
             <span className="material-icons text-lg">logout</span>
-            <span className="font-medium text-sm sm:text-base">Se déconnecter</span>
+            <span className="font-medium">Se déconnecter</span>
           </button>
         </div>
       </div>
 
       {/* Modal de création d'événement */}
-      <CreateEventModal 
-        isOpen={isEventModalOpen} 
+      <CreateEventModal
+        isOpen={isEventModalOpen}
         onClose={() => setIsEventModalOpen(false)}
         onEventCreated={() => {
           setIsEventModalOpen(false);
-          navigate('/dashboard/mes-evenements');
+          handleNavigation('/dashboard/mes-evenements');
         }}
       />
 

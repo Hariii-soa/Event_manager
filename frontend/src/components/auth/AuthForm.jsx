@@ -174,6 +174,24 @@ const AuthForm = ({ type }) => {
           />
         </div>
 
+        {type === 'register' && (
+  <div>
+    <label className="flex items-center mb-2 text-sm sm:text-base text-gray-700">
+      <span className="mr-2 text-lg sm:text-xl material-icons">phone</span>
+      Numéro de téléphone
+    </label>
+    <input
+      type="tel"
+      name="tel"
+      placeholder="Ex: +33 6 12 34 56 78"
+      value={formData.tel}
+      onChange={handleChange}
+      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
+      required
+    />
+  </div>
+)}
+
         <div>
           <label className="flex items-center mb-2 text-sm sm:text-base text-gray-700">
             <span className="mr-2 text-lg sm:text-xl material-icons">lock</span>

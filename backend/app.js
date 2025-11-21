@@ -4,6 +4,7 @@ const cors = require('cors');
 const passport = require('passport');
 const authRoutes = require('./routes/authRoutes');
 const evenementRoutes = require('./routes/evenementRoutes');
+const participantRoutes = require('./routes/participantRoutes');
 const path = require('path');
 
 // Importer la configuration passport
@@ -28,6 +29,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/evenements', evenementRoutes);
+app.use('/api/participant', participantRoutes);
 
 // Démarrage du serveur
 const PORT = process.env.PORT || 3000;

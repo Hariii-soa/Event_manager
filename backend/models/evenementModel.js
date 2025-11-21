@@ -2,15 +2,17 @@
 const db = require('../config/db');
 
 class Evenement {
-  // Récupérer tous les événements d'un organisateur (SANS participant)
+  // Récupérer tous les événements d'un organisateur (AVEC comptage des participants)
   static async findByOrganisateur(id_utilisateur) {
     try {
       const query = `
         SELECT 
           e.*,
-          0 as nombre_participants_actuels
+          COALESCE(COUNT(p.id_participation), 0) as nombre_participants_actuels
         FROM evenement e
+        LEFT JOIN participant p ON e.id_evenement = p.id_evenement
         WHERE e.id_organisateur = $1
+        GROUP BY e.id_evenement
         ORDER BY e.created_at DESC
       `;
       const { rows } = await db.query(query, [id_utilisateur]);
@@ -22,20 +24,43 @@ class Evenement {
     }
   }
 
-  // Récupérer un événement par ID (SANS participant)
+  // Récupérer un événement par ID (AVEC comptage des participants)
   static async findById(id_evenement) {
     try {
       const query = `
         SELECT 
           e.*,
-          0 as nombre_participants_actuels
+          COALESCE(COUNT(p.id_participation), 0) as nombre_participants_actuels
         FROM evenement e
+        LEFT JOIN participant p ON e.id_evenement = p.id_evenement
         WHERE e.id_evenement = $1
+        GROUP BY e.id_evenement
       `;
       const { rows } = await db.query(query, [id_evenement]);
       return rows[0];
     } catch (error) {
       console.error('❌ Erreur findById:', error);
+      throw error;
+    }
+  }
+
+  // Récupérer tous les événements publics (AVEC comptage des participants)
+  static async findAllPublic() {
+    try {
+      const query = `
+        SELECT 
+          e.*,
+          COALESCE(COUNT(p.id_participation), 0) as nombre_participants_actuels
+        FROM evenement e
+        LEFT JOIN participant p ON e.id_evenement = p.id_evenement
+        GROUP BY e.id_evenement
+        ORDER BY e.date_evenement ASC
+      `;
+      const { rows } = await db.query(query);
+      console.log('✅ Événements publics trouvés:', rows.length);
+      return rows;
+    } catch (error) {
+      console.error('❌ Erreur findAllPublic:', error);
       throw error;
     }
   }

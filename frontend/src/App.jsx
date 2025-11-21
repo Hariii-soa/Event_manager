@@ -7,6 +7,9 @@ import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import MesEvenementsPage from './pages/MesEvenementsPage';
 import EventDetailsPage from './pages/EventDetailsPage';
+import ParticiperPage from './pages/ParticiperPage';
+import EventDetailsPublicPage from './pages/EventDetailsPublicPage';
+import Sidebar from '@/components/sidebar/Sidebar';
 
 // Route protégée
 const ProtectedRoute = ({ children }) => {
@@ -20,18 +23,27 @@ const PublicRoute = ({ children }) => {
   return user ? <Navigate to="/" replace /> : children;
 };
 
+// Layout avec Sidebar pour routes protégées
+const ProtectedLayout = ({ children }) => {
+  return (
+    <div className="flex min-h-screen bg-white">
+      {/* Sidebar - TOUJOURS VISIBLE */}
+      <Sidebar />
+      
+      {/* Contenu principal avec margin pour ne pas chevaucher la sidebar */}
+      <div className="flex-1 lg:ml-[20vw] pt-16 lg:pt-0 bg-white">
+        {children}
+      </div>
+    </div>
+  );
+};
+
 function App() {
   return (
     <Routes>
-      {/* Pages publiques */}
-      <Route 
-        path="/register" 
-        element={
-          <PublicRoute>
-            <RegisterPage />
-          </PublicRoute>
-        } 
-      />
+      {/* ===================== ROUTES PUBLIQUES - SANS SIDEBAR ===================== */}
+      
+      {/* Page de connexion - première page affichée */}
       <Route 
         path="/login" 
         element={
@@ -40,39 +52,82 @@ function App() {
           </PublicRoute>
         } 
       />
+      
+      {/* Page d'inscription */}
+      <Route 
+        path="/register" 
+        element={
+          <PublicRoute>
+            <RegisterPage />
+          </PublicRoute>
+        } 
+      />
 
-      {/* Page d'accueil - avec le carrousel (Image 2) */}
+      {/* ===================== ROUTES PROTÉGÉES - AVEC SIDEBAR ===================== */}
+
+      {/* Page d'accueil - avec carrousel + SIDEBAR */}
       <Route
         path="/"
         element={
           <ProtectedRoute>
-            <HomePage />
+            <ProtectedLayout>
+              <HomePage />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
 
-      {/* Page Mes Événements - accessible via bouton "Organiser" dans sidebar */}
+      {/* Page Mes Événements - liste d'événements + SIDEBAR */}
       <Route
         path="/dashboard/mes-evenements"
         element={
           <ProtectedRoute>
-            <MesEvenementsPage />
+            <ProtectedLayout>
+              <MesEvenementsPage />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
 
-      {/* Page de détails d'événement */}
+      {/* Page Détails d'Événement + SIDEBAR */}
       <Route
         path="/dashboard/evenement/:id"
         element={
           <ProtectedRoute>
-            <EventDetailsPage />
+            <ProtectedLayout>
+              <EventDetailsPage />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
 
-      {/* Redirection par défaut */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* Page Participer - liste des événements disponibles + SIDEBAR */}
+      <Route
+        path="/dashboard/participer"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <ParticiperPage />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Page Détails Événement Public (pour participants) + SIDEBAR */}
+      <Route
+        path="/dashboard/evenement-details/:id"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <EventDetailsPublicPage />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
+
+
+      {/* Redirection par défaut vers /login */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }

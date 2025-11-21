@@ -1,28 +1,20 @@
 // src/components/layout/DashboardLayout.jsx
-import React, { useState } from 'react';
+import React from 'react';
 import { Outlet } from 'react-router-dom';
-import Sidebar from '../sidebar/Sidebar';
-import EventCreationModal from '../modal/EventCreationModal';
+import Sidebar from '@/components/sidebar/Sidebar';
 
 const DashboardLayout = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   return (
-    <>
-      {/* Layout principal */}
-      <div className="flex min-h-screen bg-gray-50">
-        <Sidebar openModal={() => setIsModalOpen(true)} />
-        <div className="flex-1 p-6 md:p-8 md:ml-[20vw]">
-          <Outlet />
-        </div>
-      </div>
+    <div className="flex min-h-screen bg-white">
+      {/* Sidebar - TOUJOURS VISIBLE */}
+      <Sidebar />
 
-      {/* MODAL EN DEHORS DU LAYOUT → Z-INDEX ÉLEVÉ */}
-      <EventCreationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
-    </>
+      {/* Contenu principal avec margin pour ne pas chevaucher la sidebar */}
+      <div className="flex-1 lg:ml-[20vw] pt-16 lg:pt-0 bg-white">
+        {/* Les sous-routes s'affichent ici */}
+        <Outlet />
+      </div>
+    </div>
   );
 };
 

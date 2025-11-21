@@ -1,12 +1,12 @@
-// src/pages/EventDetailsPage.jsx
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import CreateEventModal from '../components/modal/EventCreationModal';
+import CreateEventModal from '@/components/modal/EventCreationModal';
 
 const EventDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   const [event, setEvent] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -57,8 +57,8 @@ const EventDetailsPage = () => {
       setIsLoading(true);
       const response = await fetch(`http://localhost:3000/api/evenements/${id}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {
@@ -82,15 +82,14 @@ const EventDetailsPage = () => {
       const response = await fetch(`http://localhost:3000/api/evenements/${id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {
         throw new Error('Erreur lors de la suppression');
       }
 
-      // Rediriger vers la liste
       navigate('/dashboard/mes-evenements');
     } catch (error) {
       console.error('Erreur:', error);
@@ -101,13 +100,13 @@ const EventDetailsPage = () => {
   // Formater la date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    const options = { 
-      weekday: 'long', 
-      day: 'numeric', 
-      month: 'long', 
+    const options = {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     };
     return date.toLocaleDateString('fr-FR', options);
   };
@@ -115,7 +114,7 @@ const EventDetailsPage = () => {
   // Calculer le statut
   const getStatus = () => {
     if (!event) return { label: '', color: '' };
-    
+
     const eventDate = new Date(event.date_evenement);
     const now = new Date();
     const diffTime = eventDate - now;
@@ -145,7 +144,7 @@ const EventDetailsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="w-full bg-gray-50 flex items-center justify-center py-20">
         <div className="flex flex-col items-center gap-3">
           <span className="material-icons animate-spin text-4xl text-pink-500">refresh</span>
           <p className="text-gray-600">Chargement...</p>
@@ -156,7 +155,7 @@ const EventDetailsPage = () => {
 
   if (error || !event) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="w-full bg-gray-50 flex items-center justify-center py-20">
         <div className="text-center">
           <span className="material-icons text-6xl text-red-500 mb-4">error</span>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Erreur</h2>
@@ -177,9 +176,9 @@ const EventDetailsPage = () => {
   const placesRestantes = event.nombre_places - (event.nombre_participants_actuels || 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="w-full bg-gray-50">
       {/* Header avec image de couverture */}
-      <div className="relative h-96 bg-gradient-to-br from-pink-100 to-blue-100">
+      <div className="relative h-80 sm:h-96 bg-gradient-to-br from-pink-100 to-blue-100">
         {event.image_url ? (
           <img
             src={`http://localhost:3000${event.image_url}`}
@@ -191,7 +190,7 @@ const EventDetailsPage = () => {
             <span className="material-icons text-9xl text-gray-400">event</span>
           </div>
         )}
-        
+
         {/* Overlay gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
 
@@ -230,17 +229,17 @@ const EventDetailsPage = () => {
               {status.label}
             </span>
           </div>
-          <h1 className="text-4xl font-bold mb-2">{event.titre}</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2">{event.titre}</h1>
           <p className="text-lg opacity-90">Code: {event.code_evenement}</p>
         </div>
       </div>
 
       {/* Contenu principal */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Colonne principale - Description */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl shadow-sm p-8">
+            <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Description</h2>
               <p className="text-gray-700 leading-relaxed">
                 {event.description || 'Aucune description disponible.'}
@@ -248,9 +247,9 @@ const EventDetailsPage = () => {
             </div>
 
             {/* Section Participation */}
-            <div className="bg-white rounded-2xl shadow-sm p-8 mt-6">
+            <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8 mt-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Participation</h2>
-              
+
               <div className="flex items-center justify-between mb-4">
                 <span className="text-lg font-medium text-gray-700">Participants inscrits</span>
                 <span className="text-2xl font-bold text-gray-900">
@@ -266,25 +265,22 @@ const EventDetailsPage = () => {
                 ></div>
               </div>
 
-              <p className="text-sm text-gray-600">
-                {participationPercentage}% de places occupées
-              </p>
-              
+              <p className="text-sm text-gray-600">{participationPercentage}% de places occupées</p>
+
               {placesRestantes > 0 ? (
                 <p className="text-sm text-green-600 font-medium mt-2">
-                  ✓ {placesRestantes} place{placesRestantes > 1 ? 's' : ''} encore disponible{placesRestantes > 1 ? 's' : ''}
+                  ✓ {placesRestantes} place{placesRestantes > 1 ? 's' : ''} encore disponible
+                  {placesRestantes > 1 ? 's' : ''}
                 </p>
               ) : (
-                <p className="text-sm text-red-600 font-medium mt-2">
-                  ✗ Événement complet
-                </p>
+                <p className="text-sm text-red-600 font-medium mt-2">✗ Événement complet</p>
               )}
             </div>
           </div>
 
           {/* Colonne latérale - Informations */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-sm p-8 sticky top-6">
+            <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8">
               <h2 className="text-xl font-bold text-gray-900 mb-6">Informations</h2>
 
               <div className="space-y-6">
@@ -305,7 +301,7 @@ const EventDetailsPage = () => {
                     <span className="material-icons text-blue-600">location_on</span>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Lieu de l&apos;événement</p>
+                    <p className="text-sm text-gray-500 mb-1">Lieu de l'événement</p>
                     <p className="font-medium text-gray-900">{event.lieu}</p>
                   </div>
                 </div>
@@ -359,9 +355,9 @@ const EventDetailsPage = () => {
                 <span className="material-icons text-red-600">warning</span>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Supprimer l&apos;événement</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Supprimer l'événement</h3>
                 <p className="text-sm text-gray-600">
-                  Êtes-vous sûr de vouloir supprimer &quot;{event.titre}&quot; ? Cette action est irréversible.
+                  Êtes-vous sûr de vouloir supprimer "{event.titre}" ? Cette action est irréversible.
                 </p>
               </div>
             </div>

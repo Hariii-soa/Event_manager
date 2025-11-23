@@ -3,8 +3,10 @@ const express = require('express');
 const cors = require('cors');
 const passport = require('passport');
 const authRoutes = require('./routes/authRoutes');
+const adminAuthRoutes = require('./routes/adminAuthRoutes');
 const evenementRoutes = require('./routes/evenementRoutes');
 const participantRoutes = require('./routes/participantRoutes');
+const activitesRoutes = require('./routes/activitesRoutes');
 const path = require('path');
 
 // Importer la configuration passport
@@ -28,8 +30,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/admin-auth', adminAuthRoutes);
 app.use('/api/evenements', evenementRoutes);
 app.use('/api/participant', participantRoutes);
+app.use('/api/activites', activitesRoutes);
 
 // Démarrage du serveur
 const PORT = process.env.PORT || 3000;

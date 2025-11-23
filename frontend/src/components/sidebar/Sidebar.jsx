@@ -98,7 +98,7 @@ const Sidebar = () => {
 
             {/* Bouton Activités - Redirige vers mes-evenements */}
             <button
-              onClick={() => handleNavigation('/dashboard/participer')}
+              onClick={() => handleNavigation('/dashboard/activites')}
               className="w-full flex items-center gap-3 px-4 py-3 bg-yellow-50 hover:bg-yellow-100 rounded-xl transition"
             >
               <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">

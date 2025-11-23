@@ -9,6 +9,7 @@ import MesEvenementsPage from './pages/MesEvenementsPage';
 import EventDetailsPage from './pages/EventDetailsPage';
 import ParticiperPage from './pages/ParticiperPage';
 import EventDetailsPublicPage from './pages/EventDetailsPublicPage';
+import ActivitesPage from './pages/ActivitesPage';
 import Sidebar from '@/components/sidebar/Sidebar';
 
 // Route protégée
@@ -125,6 +126,17 @@ function App() {
         }
       />
 
+      {/* Page Activités (Admin seulement) + SIDEBAR */}
+      <Route
+        path="/dashboard/activites"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <ActivitesPage />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
 
       {/* Redirection par défaut vers /login */}
       <Route path="*" element={<Navigate to="/login" replace />} />

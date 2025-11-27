@@ -1,4 +1,4 @@
-// src/components/auth/AuthForm.jsx
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -98,7 +98,6 @@ const AuthForm = ({ type }) => {
           throw new Error(data.error || 'Échec de la connexion');
         }
 
-         // ✅ Utiliser login avec le bon ordre : userData, token
         login(data.user, data.token);
         navigate('/');
       } catch (err) {
@@ -175,22 +174,22 @@ const AuthForm = ({ type }) => {
         </div>
 
         {type === 'register' && (
-  <div>
-    <label className="flex items-center mb-2 text-sm sm:text-base text-gray-700">
-      <span className="mr-2 text-lg sm:text-xl material-icons">phone</span>
-      Numéro de téléphone
-    </label>
-    <input
-      type="tel"
-      name="tel"
-      placeholder="Ex: +33 6 12 34 56 78"
-      value={formData.tel}
-      onChange={handleChange}
-      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
-      required
-    />
-  </div>
-)}
+          <div>
+            <label className="flex items-center mb-2 text-sm sm:text-base text-gray-700">
+              <span className="mr-2 text-lg sm:text-xl material-icons">phone</span>
+              Numéro de téléphone
+            </label>
+            <input
+              type="tel"
+              name="tel"
+              placeholder="Ex: +33 6 12 34 56 78"
+              value={formData.tel}
+              onChange={handleChange}
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
+              required
+            />
+          </div>
+        )}
 
         <div>
           <label className="flex items-center mb-2 text-sm sm:text-base text-gray-700">
@@ -223,6 +222,18 @@ const AuthForm = ({ type }) => {
               className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
               required
             />
+          </div>
+        )}
+
+        {/* 🆕 AJOUT : Lien "Mot de passe oublié" */}
+        {type === 'login' && (
+          <div className="flex justify-end">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
+            >
+              Mot de passe oublié ?
+            </Link>
           </div>
         )}
 

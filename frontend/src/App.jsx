@@ -1,9 +1,11 @@
-// src/App.jsx
+
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage'; // 🆕 AJOUT
+import ResetPasswordPage from './pages/ResetPasswordPage'; // 🆕 AJOUT
 import HomePage from './pages/HomePage';
 import MesEvenementsPage from './pages/MesEvenementsPage';
 import EventDetailsPage from './pages/EventDetailsPage';
@@ -60,6 +62,26 @@ function App() {
         element={
           <PublicRoute>
             <RegisterPage />
+          </PublicRoute>
+        } 
+      />
+
+      {/* 🆕 Page "Mot de passe oublié" */}
+      <Route 
+        path="/forgot-password" 
+        element={
+          <PublicRoute>
+            <ForgotPasswordPage />
+          </PublicRoute>
+        } 
+      />
+
+      {/* 🆕 Page de réinitialisation du mot de passe */}
+      <Route 
+        path="/reset-password/:token" 
+        element={
+          <PublicRoute>
+            <ResetPasswordPage />
           </PublicRoute>
         } 
       />

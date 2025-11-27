@@ -1,90 +1,13 @@
-// services/mailService.js
 const nodemailer = require('nodemailer');
 
-// Configuration du transporteur email avec support multi-services
-let transporter;
-
-// Fonction pour créer le transporteur selon le service configuré
-const createTransporter = () => {
-  const emailService = process.env.EMAIL_SERVICE || 'gmail';
-  
-  // Configuration selon le service
-  const configs = {
-    // Gmail - Nécessite un App Password
-    gmail: {
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD
-      }
-    },
-    
-    // Outlook/Hotmail
-    outlook: {
-      service: 'hotmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD
-      }
-    },
-    
-    // Yahoo
-    yahoo: {
-      service: 'yahoo',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD
-      }
-    },
-    
-    // Configuration SMTP personnalisée (recommandé pour production)
-    smtp: {
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT) || 587,
-      secure: process.env.SMTP_SECURE === 'true', // true pour port 465, false pour autres ports
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD
-      },
-      tls: {
-        rejectUnauthorized: false // Pour éviter les erreurs de certificat en dev
-      }
-    },
-    
-    // Mailtrap (pour les tests en développement)
-    mailtrap: {
-      host: 'smtp.mailtrap.io',
-      port: 2525,
-      auth: {
-        user: process.env.MAILTRAP_USER,
-        pass: process.env.MAILTRAP_PASSWORD
-      }
-    }
-  };
-
-  return nodemailer.createTransporter(configs[emailService] || configs.smtp);
-};
-
-// Initialiser le transporteur
-try {
-  transporter = createTransporter();
-  console.log('📧 Configuration email:', process.env.EMAIL_SERVICE || 'smtp');
-  
-  // Vérifier la configuration (optionnel, peut être désactivé si pas de connexion)
-  if (process.env.EMAIL_VERIFY !== 'false') {
-    transporter.verify()
-      .then(() => {
-        console.log('✅ Serveur email prêt à envoyer des messages');
-      })
-      .catch((error) => {
-        console.log('⚠️ Avertissement: Impossible de vérifier la configuration email');
-        console.log('💡 Les emails ne seront pas envoyés. Vérifiez votre configuration .env');
-        console.log('Erreur:', error.message);
-      });
+// Configuration du transporteur email
+const transporter = nodemailer.createTransport({
+  service: process.env.EMAIL_SERVICE || 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD
   }
-} catch (error) {
-  console.error('❌ Erreur lors de la création du transporteur email:', error.message);
-}
+});
 
 // Formater la date en français
 const formatDate = (dateString) => {
@@ -103,14 +26,8 @@ const formatDate = (dateString) => {
 // Email d'acceptation
 const sendAcceptanceEmail = async (email, prenom, nom, titre, dateEvenement, lieu) => {
   try {
-    // Vérifier si le transporteur est configuré
-    if (!transporter) {
-      console.log('⚠️ Transporteur email non configuré, email non envoyé');
-      return false;
-    }
-
     const mailOptions = {
-      from: `"Evenia - Gestion d'Événements" <${process.env.EMAIL_USER}>`,
+      from: process.env.EMAIL_USER,
       to: email,
       subject: `✅ Votre inscription a été acceptée - ${titre}`,
       html: `
@@ -154,22 +71,16 @@ const sendAcceptanceEmail = async (email, prenom, nom, titre, dateEvenement, lie
     console.log('✅ Email d\'acceptation envoyé à:', email);
     return true;
   } catch (error) {
-    console.error('❌ Erreur envoi email acceptation:', error.message);
-    // Ne pas bloquer l'application, juste logger l'erreur
-    return false;
+    console.error('❌ Erreur envoi email acceptation:', error);
+    throw error;
   }
 };
 
 // Email de refus
 const sendRejectionEmail = async (email, prenom, nom, titre, raison) => {
   try {
-    if (!transporter) {
-      console.log('⚠️ Transporteur email non configuré, email non envoyé');
-      return false;
-    }
-
     const mailOptions = {
-      from: `"Evenia - Gestion d'Événements" <${process.env.EMAIL_USER}>`,
+      from: process.env.EMAIL_USER,
       to: email,
       subject: `❌ Votre inscription a été refusée - ${titre}`,
       html: `
@@ -212,21 +123,16 @@ const sendRejectionEmail = async (email, prenom, nom, titre, raison) => {
     console.log('✅ Email de refus envoyé à:', email);
     return true;
   } catch (error) {
-    console.error('❌ Erreur envoi email refus:', error.message);
-    return false;
+    console.error('❌ Erreur envoi email refus:', error);
+    throw error;
   }
 };
 
 // Email de confirmation d'inscription initiale
 const sendRegistrationConfirmationEmail = async (email, prenom, nom, titre, code) => {
   try {
-    if (!transporter) {
-      console.log('⚠️ Transporteur email non configuré, email non envoyé');
-      return false;
-    }
-
     const mailOptions = {
-      from: `"Evenia - Gestion d'Événements" <${process.env.EMAIL_USER}>`,
+      from: process.env.EMAIL_USER,
       to: email,
       subject: `📋 Inscription à l'événement reçue - ${titre}`,
       html: `
@@ -266,13 +172,123 @@ const sendRegistrationConfirmationEmail = async (email, prenom, nom, titre, code
     console.log('✅ Email de confirmation d\'inscription envoyé à:', email);
     return true;
   } catch (error) {
-    console.error('❌ Erreur envoi email confirmation:', error.message);
-    return false;
+    console.error('❌ Erreur envoi email confirmation:', error);
+    throw error;
+  }
+};
+
+// 🆕 Email de réinitialisation du mot de passe
+const sendPasswordResetEmail = async (email, prenom, nom, resetUrl) => {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: '🔑 Réinitialisation de votre mot de passe - Evenia',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+            <h1 style="color: white; margin: 0;">🔑 Réinitialisation du mot de passe</h1>
+          </div>
+          
+          <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px;">
+            <p style="color: #333; font-size: 16px;">Bonjour <strong>${prenom} ${nom}</strong>,</p>
+            
+            <p style="color: #555; line-height: 1.6;">
+              Vous avez demandé à réinitialiser votre mot de passe sur Evenia. Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe :
+            </p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${resetUrl}" 
+                 style="display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+                Réinitialiser mon mot de passe
+              </a>
+            </div>
+            
+            <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px;">
+              <p style="margin: 0; color: #856404; font-size: 14px;">
+                <strong>⚠️ Important :</strong> Ce lien est valable pendant 1 heure. Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.
+              </p>
+            </div>
+            
+            <p style="color: #999; font-size: 12px; margin-top: 20px;">
+              Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre navigateur :<br>
+              <a href="${resetUrl}" style="color: #667eea; word-break: break-all;">${resetUrl}</a>
+            </p>
+            
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+            
+            <p style="color: #999; font-size: 12px; text-align: center;">
+              © 2025 Evenia - Plateforme de Gestion d'Événements
+            </p>
+          </div>
+        </div>
+      `
+    };
+    
+    await transporter.sendMail(mailOptions);
+    console.log('✅ Email de réinitialisation envoyé à:', email);
+    return true;
+  } catch (error) {
+    console.error('❌ Erreur envoi email réinitialisation:', error);
+    throw error;
+  }
+};
+
+// 🆕 Email de confirmation de changement de mot de passe
+const sendPasswordChangedEmail = async (email, prenom, nom) => {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: '✅ Votre mot de passe a été modifié - Evenia',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+            <h1 style="color: white; margin: 0;">✅ Mot de passe modifié</h1>
+          </div>
+          
+          <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px;">
+            <p style="color: #333; font-size: 16px;">Bonjour <strong>${prenom} ${nom}</strong>,</p>
+            
+            <p style="color: #555; line-height: 1.6;">
+              Votre mot de passe a été modifié avec succès. Vous pouvez maintenant vous connecter à Evenia avec votre nouveau mot de passe.
+            </p>
+            
+            <div style="background: #d1fae5; border-left: 4px solid #10b981; padding: 15px; margin: 20px 0; border-radius: 4px;">
+              <p style="margin: 0; color: #065f46; font-size: 14px;">
+                <strong>✅ Confirmation :</strong> Votre compte est sécurisé avec votre nouveau mot de passe.
+              </p>
+            </div>
+            
+            <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px;">
+              <p style="margin: 0; color: #856404; font-size: 14px;">
+                <strong>⚠️ Important :</strong> Si vous n'avez pas effectué cette modification, contactez-nous immédiatement.
+              </p>
+            </div>
+            
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+            
+            <p style="color: #999; font-size: 12px; text-align: center;">
+              © 2025 Evenia - Plateforme de Gestion d'Événements
+            </p>
+          </div>
+        </div>
+      `
+    };
+    
+    await transporter.sendMail(mailOptions);
+    console.log('✅ Email de confirmation de changement envoyé à:', email);
+    return true;
+  } catch (error) {
+    console.error('❌ Erreur envoi email confirmation changement:', error);
+    throw error;
   }
 };
 
 module.exports = {
   sendAcceptanceEmail,
   sendRejectionEmail,
-  sendRegistrationConfirmationEmail
+  sendRegistrationConfirmationEmail,
+  sendPasswordResetEmail,
+  sendPasswordChangedEmail
 };

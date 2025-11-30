@@ -7,6 +7,7 @@ const { verifyAdminPassword } = require('../middlewares/adminPasswordMiddleware'
 // Vérifier l'accès admin (authentification + mot de passe)
 router.post('/verify-admin-password', verifyToken, verifyAdminPassword, (req, res) => {
   try {
+    console.log('✅ Authentification admin réussie');
     res.status(200).json({
       message: 'Authentification admin réussie',
       authorized: true

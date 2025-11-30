@@ -13,6 +13,8 @@ import ParticiperPage from './pages/ParticiperPage';
 import EventDetailsPublicPage from './pages/EventDetailsPublicPage';
 import ActivitesPage from './pages/ActivitesPage';
 import Sidebar from '@/components/sidebar/Sidebar';
+import ConsulterPage from './pages/ConsulterPage';
+
 
 // Route protégée
 const ProtectedRoute = ({ children }) => {
@@ -155,6 +157,17 @@ function App() {
           <ProtectedRoute>
             <ProtectedLayout>
               <ActivitesPage />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
+      {/*Page de consultation*/}
+      <Route
+        path="/dashboard/consulter"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <ConsulterPage />
             </ProtectedLayout>
           </ProtectedRoute>
         }

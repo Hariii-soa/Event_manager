@@ -1,13 +1,13 @@
 // controllers/participantController.js
 const Participant = require('../models/participantModel');
 const Evenement = require('../models/evenementModel');
+const mailService = require('../services/mailService');
 
 // Récupérer tous les événements publics disponibles pour participation
 const getEvenementsDisponibles = async (req, res) => {
   try {
     console.log('📋 Récupération des événements disponibles...');
     
-    // Récupérer tous les événements publics avec comptage des participants
     const evenements = await Evenement.findAllPublic();
     
     console.log('✅ Événements disponibles:', evenements.length);
@@ -20,13 +20,13 @@ const getEvenementsDisponibles = async (req, res) => {
   }
 };
 
-// S'inscrire à un événement
+// S'inscrire à un événement avec envoi d'email de confirmation
 const inscrireParticipant = async (req, res) => {
   try {
     const { id_evenement } = req.params;
     const { prenom, nom, email, telephone } = req.body;
 
-    console.log('🔐 Inscription à l\'événement ID:', id_evenement);
+    console.log('📝 Inscription à l\'événement ID:', id_evenement);
     console.log('📋 Données participant:', { prenom, nom, email });
 
     // Validation des champs
@@ -77,7 +77,7 @@ const inscrireParticipant = async (req, res) => {
       });
     }
 
-    // Créer la participation
+    // Créer la participation avec statut "en attente"
     const nouvelleParticipation = await Participant.create({
       id_evenement,
       prenom,
@@ -86,16 +86,30 @@ const inscrireParticipant = async (req, res) => {
       telephone
     });
 
-    console.log('✅ Participation créée:', nouvelleParticipation.id_participation);
+    console.log('✅ Participation créée avec statut:', nouvelleParticipation.statut);
+
+    // ✅ ENVOI D'EMAIL DE CONFIRMATION D'INSCRIPTION
+    try {
+      await mailService.sendRegistrationConfirmationEmail(
+        email,
+        prenom,
+        nom,
+        evenement.titre,
+        evenement.code_evenement
+      );
+      console.log('✅ Email de confirmation envoyé');
+    } catch (emailError) {
+      console.error('⚠️ Erreur envoi email (inscription enregistrée quand même):', emailError);
+      // On continue même si l'email échoue
+    }
 
     res.status(201).json({
-      message: 'Inscription réussie !',
+      message: 'Inscription réussie ! Votre demande est en attente de validation. Un email de confirmation vous a été envoyé.',
       participation: nouvelleParticipation
     });
   } catch (error) {
     console.error('❌ Erreur inscrireParticipant:', error);
     
-    // Gestion des erreurs spécifiques
     if (error.code === '23505') {
       return res.status(400).json({ 
         error: 'Vous êtes déjà inscrit à cet événement' 
@@ -117,7 +131,6 @@ const getParticipantsByEvenement = async (req, res) => {
 
     console.log('📋 Récupération participants événement ID:', id_evenement);
 
-    // Vérifier que l'utilisateur est l'organisateur de l'événement
     const isOrganisateur = await Evenement.isOrganisateur(id_evenement, id_utilisateur);
     if (!isOrganisateur) {
       return res.status(403).json({ 
@@ -125,7 +138,6 @@ const getParticipantsByEvenement = async (req, res) => {
       });
     }
 
-    // Récupérer les participants
     const participants = await Participant.findByEvenement(id_evenement);
 
     console.log('✅ Participants trouvés:', participants.length);
@@ -146,7 +158,6 @@ const annulerParticipation = async (req, res) => {
 
     console.log('🗑️ Annulation participation ID:', id_participation);
 
-    // Récupérer la participation pour avoir l'id_evenement
     const participationQuery = 'SELECT id_evenement FROM participant WHERE id_participation = $1';
     const db = require('../config/db');
     const { rows } = await db.query(participationQuery, [id_participation]);
@@ -155,7 +166,6 @@ const annulerParticipation = async (req, res) => {
       return res.status(404).json({ error: 'Participation non trouvée' });
     }
 
-    // Vérifier que l'utilisateur est l'organisateur
     const isOrganisateur = await Evenement.isOrganisateur(rows[0].id_evenement, id_utilisateur);
     if (!isOrganisateur) {
       return res.status(403).json({ 
@@ -163,7 +173,6 @@ const annulerParticipation = async (req, res) => {
       });
     }
 
-    // Supprimer la participation
     const participationSupprimee = await Participant.delete(id_participation);
 
     if (!participationSupprimee) {

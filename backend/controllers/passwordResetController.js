@@ -1,8 +1,8 @@
-
+// controllers/passwordResetController.js
 const crypto = require('crypto');
 const db = require('../config/db');
 const bcrypt = require('bcryptjs');
-const mailService = require('../services/mailService');
+const mailService = require('../services/mailService'); // ✅ Utilise ton service existant
 
 // Demander la réinitialisation du mot de passe
 const requestPasswordReset = async (req, res) => {
@@ -20,7 +20,7 @@ const requestPasswordReset = async (req, res) => {
     const { rows } = await db.query(userQuery, [email]);
     
     if (rows.length === 0) {
-      // Pour des raisons de sécurité, on renvoie le même message même si l'email n'existe pas
+      // Pour des raisons de sécurité, on renvoie le même message
       return res.status(200).json({ 
         message: 'Si cet email existe, vous recevrez un lien de réinitialisation' 
       });
@@ -41,8 +41,10 @@ const requestPasswordReset = async (req, res) => {
     `;
     await db.query(updateQuery, [resetTokenHash, resetTokenExpiry, user.id_utilisateur]);
     
-    // Envoyer l'email avec le lien de réinitialisation
+    // Créer le lien de réinitialisation
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
+    
+    // Envoyer l'email avec le service mail existant
     await mailService.sendPasswordResetEmail(user.email, user.prenom, user.nom, resetUrl);
     
     console.log('✅ Email de réinitialisation envoyé à:', email);

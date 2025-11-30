@@ -2,7 +2,7 @@
 const db = require('../config/db');
 
 class Participant {
-  // Créer une participation
+  // Créer une participation avec statut par défaut "en attente"
   static async create(participationData) {
     try {
       const query = `
@@ -20,41 +20,10 @@ class Participant {
         participationData.telephone
       ];
       const { rows } = await db.query(query, values);
+      console.log('✅ Participation créée avec statut "en attente":', rows[0]);
       return rows[0];
     } catch (error) {
       console.error('❌ Erreur create participation:', error);
-      throw error;
-    }
-  }
-
-  // ✅ AJOUT: Récupérer une participation par ID
-  static async findById(id_participation) {
-    try {
-      const query = `
-        SELECT * FROM participant 
-        WHERE id_participation = $1
-      `;
-      const { rows } = await db.query(query, [id_participation]);
-      return rows[0];
-    } catch (error) {
-      console.error('❌ Erreur findById:', error);
-      throw error;
-    }
-  }
-
-  // ✅ AJOUT: Mettre à jour le statut d'une participation
-  static async updateStatut(id_participation, statut) {
-    try {
-      const query = `
-        UPDATE participant
-        SET statut = $1
-        WHERE id_participation = $2
-        RETURNING *
-      `;
-      const { rows } = await db.query(query, [statut, id_participation]);
-      return rows[0];
-    } catch (error) {
-      console.error('❌ Erreur updateStatut:', error);
       throw error;
     }
   }
@@ -74,11 +43,13 @@ class Participant {
     }
   }
 
-  // Récupérer tous les participants d'un événement
+  // Récupérer tous les participants d'un événement avec leur statut
   static async findByEvenement(id_evenement) {
     try {
       const query = `
-        SELECT p.*
+        SELECT 
+          p.*,
+          TO_CHAR(p.created_at, 'DD/MM/YYYY à HH24:MI') as date_inscription
         FROM participant p
         WHERE p.id_evenement = $1
         ORDER BY 
@@ -87,9 +58,10 @@ class Participant {
             WHEN p.statut = 'accepté' THEN 2
             WHEN p.statut = 'refusé' THEN 3
           END,
-          p.id_participation DESC
+          p.created_at DESC
       `;
       const { rows } = await db.query(query, [id_evenement]);
+      console.log(`✅ Participants récupérés pour événement ${id_evenement}:`, rows.length);
       return rows;
     } catch (error) {
       console.error('❌ Erreur findByEvenement:', error);
@@ -97,18 +69,52 @@ class Participant {
     }
   }
 
-  // Compter le nombre de participants acceptés d'un événement
+  // Compter le nombre de participants d'un événement
   static async countByEvenement(id_evenement) {
     try {
       const query = `
         SELECT COUNT(*) as total
         FROM participant
-        WHERE id_evenement = $1 AND statut = 'accepté'
+        WHERE id_evenement = $1
       `;
       const { rows } = await db.query(query, [id_evenement]);
       return parseInt(rows[0].total);
     } catch (error) {
       console.error('❌ Erreur countByEvenement:', error);
+      throw error;
+    }
+  }
+
+  // Récupérer une participation par ID
+  static async findById(id_participation) {
+    try {
+      const query = 'SELECT * FROM participant WHERE id_participation = $1';
+      const { rows } = await db.query(query, [id_participation]);
+      console.log('📋 Participation trouvée:', rows[0]);
+      return rows[0];
+    } catch (error) {
+      console.error('❌ Erreur findById:', error);
+      throw error;
+    }
+  }
+
+  // Mettre à jour le statut d'une participation
+  static async updateStatut(id_participation, statut) {
+    try {
+      console.log(`🔄 Mise à jour statut participation ${id_participation} vers "${statut}"`);
+      
+      const query = `
+        UPDATE participant 
+        SET statut = $1
+        WHERE id_participation = $2
+        RETURNING *
+      `;
+      const { rows } = await db.query(query, [statut, id_participation]);
+      
+      console.log('✅ Statut mis à jour:', rows[0]);
+      return rows[0];
+    } catch (error) {
+      console.error('❌ Erreur updateStatut:', error);
       throw error;
     }
   }
@@ -128,24 +134,42 @@ class Participant {
   // Récupérer les événements auxquels un utilisateur participe (par email)
   static async findEventsByEmail(email) {
     try {
+      console.log('🔍 Recherche des événements pour l\'email:', email);
+      
       const query = `
         SELECT 
           e.*,
           p.id_participation,
-          p.statut as statut_participation,
+          p.prenom,
+          p.nom,
+          p.email,
+          p.telephone,
+          p.statut,
+          p.created_at as date_inscription,
           COALESCE(part_count.participants, 0) as nombre_participants_actuels
         FROM participant p
         INNER JOIN evenement e ON p.id_evenement = e.id_evenement
         LEFT JOIN (
           SELECT id_evenement, COUNT(*) as participants
           FROM participant
-          WHERE statut = 'accepté'
           GROUP BY id_evenement
         ) part_count ON e.id_evenement = part_count.id_evenement
-        WHERE p.email = $1 AND p.statut = 'accepté'
+        WHERE p.email = $1
         ORDER BY e.date_evenement ASC
       `;
+      
       const { rows } = await db.query(query, [email]);
+      
+      console.log('✅ Événements trouvés:', rows.length);
+      if (rows.length > 0) {
+        console.log('📋 Premier événement:', {
+          prenom: rows[0].prenom,
+          nom: rows[0].nom,
+          email: rows[0].email,
+          statut: rows[0].statut
+        });
+      }
+      
       return rows;
     } catch (error) {
       console.error('❌ Erreur findEventsByEmail:', error);

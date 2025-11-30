@@ -31,10 +31,9 @@ const verifyAdmin = async (req, res, next) => {
   }
 };
 
-// Récupérer tous les événements (pour le dropdown) - REQUÊTE CORRIGÉE
+// Récupérer tous les événements (pour le dropdown)
 const getEvenementsForAdmin = async (req, res) => {
   try {
-    // ✅ Ajout des alias de table (e. et p.) pour éviter l'ambiguïté
     const query = `
       SELECT 
         e.id_evenement,
@@ -94,7 +93,7 @@ const getParticipantsByEvenement = async (req, res) => {
   }
 };
 
-// Accepter une participation
+// Accepter une participation avec envoi d'email
 const accepterParticipation = async (req, res) => {
   try {
     const { id_participation } = req.params;
@@ -118,17 +117,23 @@ const accepterParticipation = async (req, res) => {
     // Récupérer les informations de l'événement pour l'email
     const evenement = await Evenement.findById(participant.id_evenement);
     
-    // Envoyer un email de confirmation
-    await mailService.sendAcceptanceEmail(
-      participant.email,
-      participant.prenom,
-      participant.nom,
-      evenement.titre,
-      evenement.date_evenement,
-      evenement.lieu
-    );
+    // ✅ ENVOI D'EMAIL D'ACCEPTATION
+    try {
+      await mailService.sendAcceptanceEmail(
+        participant.email,
+        participant.prenom,
+        participant.nom,
+        evenement.titre,
+        evenement.date_evenement,
+        evenement.lieu
+      );
+      console.log('✅ Email d\'acceptation envoyé avec succès');
+    } catch (emailError) {
+      console.error('⚠️ Erreur envoi email (participation acceptée quand même):', emailError);
+      // On continue même si l'email échoue
+    }
     
-    console.log('✅ Email de confirmation envoyé à:', participant.email);
+    console.log('✅ Participation acceptée');
     
     res.status(200).json({
       message: 'Participation acceptée et email envoyé',
@@ -140,13 +145,14 @@ const accepterParticipation = async (req, res) => {
   }
 };
 
-// Refuser une participation
+// Refuser une participation avec envoi d'email
 const refuserParticipation = async (req, res) => {
   try {
     const { id_participation } = req.params;
     const { raison } = req.body;
     
     console.log('❌ Refus participation ID:', id_participation);
+    console.log('📝 Raison:', raison);
     
     // Récupérer la participation
     const participant = await Participant.findById(id_participation);
@@ -165,16 +171,22 @@ const refuserParticipation = async (req, res) => {
     // Récupérer les informations de l'événement pour l'email
     const evenement = await Evenement.findById(participant.id_evenement);
     
-    // Envoyer un email de refus
-    await mailService.sendRejectionEmail(
-      participant.email,
-      participant.prenom,
-      participant.nom,
-      evenement.titre,
-      raison || 'Aucune raison spécifiée'
-    );
+    // ✅ ENVOI D'EMAIL DE REFUS
+    try {
+      await mailService.sendRejectionEmail(
+        participant.email,
+        participant.prenom,
+        participant.nom,
+        evenement.titre,
+        raison || 'Aucune raison spécifiée'
+      );
+      console.log('✅ Email de refus envoyé avec succès');
+    } catch (emailError) {
+      console.error('⚠️ Erreur envoi email (participation refusée quand même):', emailError);
+      // On continue même si l'email échoue
+    }
     
-    console.log('✅ Email de refus envoyé à:', participant.email);
+    console.log('✅ Participation refusée');
     
     res.status(200).json({
       message: 'Participation refusée et email envoyé',

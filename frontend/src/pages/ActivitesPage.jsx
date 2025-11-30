@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-// Modal de mot de passe admin intégré
+// Modal de mot de passe admin
 const AdminPasswordModal = ({ isOpen, onClose, onSuccess }) => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -35,9 +35,7 @@ const AdminPasswordModal = ({ isOpen, onClose, onSuccess }) => {
         return;
       }
 
-      console.log('🔐 Vérification mot de passe admin...');
-
-      const response = await fetch('http://localhost:3000/api/admin/verify-admin-password', {
+      const response = await fetch('http://localhost:3000/api/admin-auth/verify-admin-password', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -90,7 +88,7 @@ const AdminPasswordModal = ({ isOpen, onClose, onSuccess }) => {
           </div>
         </div>
 
-        <div className="p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
           <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
             <div className="flex items-start gap-3">
               <span className="material-icons text-blue-500 text-xl">info</span>
@@ -122,11 +120,6 @@ const AdminPasswordModal = ({ isOpen, onClose, onSuccess }) => {
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && !isLoading) {
-                    handleSubmit(e);
-                  }
-                }}
                 placeholder="Entrez le mot de passe admin"
                 className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-pink-200 focus:border-pink-400 outline-none transition text-sm"
                 disabled={isLoading}
@@ -151,6 +144,7 @@ const AdminPasswordModal = ({ isOpen, onClose, onSuccess }) => {
 
           <div className="flex gap-3 pt-2">
             <button
+              type="button"
               onClick={handleCancel}
               disabled={isLoading}
               className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
@@ -158,7 +152,7 @@ const AdminPasswordModal = ({ isOpen, onClose, onSuccess }) => {
               Annuler
             </button>
             <button
-              onClick={handleSubmit}
+              type="submit"
               disabled={isLoading}
               className="flex-1 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl hover:from-pink-600 hover:to-purple-600 transition font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
@@ -175,7 +169,7 @@ const AdminPasswordModal = ({ isOpen, onClose, onSuccess }) => {
               )}
             </button>
           </div>
-        </div>
+        </form>
 
         <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
           <p className="text-xs text-gray-600 text-center flex items-center justify-center gap-1">
@@ -208,7 +202,6 @@ const ActivitesPage = () => {
     }
   };
 
-  // Charger tous les événements
   const fetchEvenements = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -240,13 +233,14 @@ const ActivitesPage = () => {
     }
   }, [isAdminAuthenticated, fetchEvenements]);
 
-  // Charger les participants d'un événement
   const handleSelectEvenement = async (id_evenement) => {
     try {
       setIsLoading(true);
       setError('');
       setSuccessMessage('');
       const token = getToken();
+
+      console.log('📋 Chargement des participants pour événement:', id_evenement);
 
       const response = await fetch(
         `http://localhost:3000/api/activites/evenement/${id_evenement}/participants`,
@@ -262,9 +256,16 @@ const ActivitesPage = () => {
       }
 
       const data = await response.json();
+      console.log('✅ Données reçues:', data);
+      console.log('📋 Participants:', data.participants);
+
       setSelectedEvenement(data.evenement);
       setParticipants(data.participants);
-      console.log('✅ Participants chargés:', data.participants.length);
+      
+      // Log pour déboguer
+      data.participants.forEach(p => {
+        console.log(`Participant ${p.prenom} ${p.nom}: statut = "${p.statut}"`);
+      });
     } catch (error) {
       console.error('❌ Erreur handleSelectEvenement:', error);
       setError(error.message);
@@ -273,15 +274,17 @@ const ActivitesPage = () => {
     }
   };
 
-  // Accepter une participation
   const handleAccepter = async (id_participation, participantName) => {
-    if (!window.confirm(`Accepter l'inscription de ${participantName} ?\n\n✉️ Un email de confirmation sera automatiquement envoyé.`)) {
+    if (!window.confirm(`Accepter l'inscription de ${participantName} ?\n\nUn email de confirmation sera automatiquement envoyé.`)) {
       return;
     }
 
     try {
       setIsLoading(true);
       const token = getToken();
+      
+      console.log('✅ Acceptation participation ID:', id_participation);
+      
       const response = await fetch(
         `http://localhost:3000/api/activites/participation/${id_participation}/accepter`,
         {
@@ -298,7 +301,7 @@ const ActivitesPage = () => {
       }
 
       console.log('✅ Participation acceptée');
-      setSuccessMessage(`✅ Inscription de ${participantName} acceptée ! Un email de confirmation a été envoyé.`);
+      setSuccessMessage(`Inscription de ${participantName} acceptée ! Un email de confirmation a été envoyé.`);
       
       if (selectedEvenement) {
         handleSelectEvenement(selectedEvenement.id_evenement);
@@ -314,15 +317,16 @@ const ActivitesPage = () => {
     }
   };
 
-  // Refuser une participation
   const handleRefuser = async (id_participation, participantName) => {
-    const raison = prompt(`Refuser l'inscription de ${participantName}\n\n📝 Veuillez indiquer la raison du refus :\n(Cette raison sera envoyée par email)`);
+    const raison = prompt(`Refuser l'inscription de ${participantName}\n\nVeuillez indiquer la raison du refus :\n(Cette raison sera envoyée par email)`);
     
-    if (raison === null) return; // Annulation
+    if (raison === null) return;
 
     try {
       setIsLoading(true);
       const token = getToken();
+
+      console.log('❌ Refus participation ID:', id_participation);
 
       const response = await fetch(
         `http://localhost:3000/api/activites/participation/${id_participation}/refuser`,
@@ -342,7 +346,7 @@ const ActivitesPage = () => {
       }
 
       console.log('✅ Participation refusée');
-      setSuccessMessage(`❌ Inscription de ${participantName} refusée. Un email a été envoyé avec la raison du refus.`);
+      setSuccessMessage(`Inscription de ${participantName} refusée. Un email a été envoyé avec la raison du refus.`);
       
       if (selectedEvenement) {
         handleSelectEvenement(selectedEvenement.id_evenement);
@@ -358,7 +362,6 @@ const ActivitesPage = () => {
     }
   };
 
-  // Filtrer les participants selon la recherche
   const filteredParticipants = participants.filter(p =>
     p.prenom?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.nom?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -366,8 +369,9 @@ const ActivitesPage = () => {
     p.telephone?.includes(searchQuery)
   );
 
-  // Fonction pour obtenir le badge de statut
   const getStatusBadge = (statut) => {
+    console.log('🏷️ Badge pour statut:', statut);
+    
     switch (statut) {
       case 'accepté':
         return {
@@ -406,7 +410,6 @@ const ActivitesPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header avec couleur #F4CFDF */}
       <div style={{ backgroundColor: '#F4CFDF' }} className="text-gray-900 px-4 sm:px-8 py-6 sm:py-8 shadow-lg">
         <div className="flex items-center gap-3 sm:gap-4">
           <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm flex-shrink-0">
@@ -419,17 +422,14 @@ const ActivitesPage = () => {
         </div>
       </div>
 
-      {/* Section principale */}
       <div className="px-4 sm:px-8 py-6 sm:py-8">
-        {/* Messages de succès */}
         {successMessage && (
-          <div className="bg-green-50 border-l-4 border-green-400 text-green-800 px-4 sm:px-6 py-3 sm:py-4 rounded-lg mb-6 flex items-center gap-3 shadow-md animate-fade-in">
+          <div className="bg-green-50 border-l-4 border-green-400 text-green-800 px-4 sm:px-6 py-3 sm:py-4 rounded-lg mb-6 flex items-center gap-3 shadow-md">
             <span className="material-icons text-green-500">check_circle</span>
             <span className="font-medium text-sm sm:text-base">{successMessage}</span>
           </div>
         )}
 
-        {/* Message d'erreur */}
         {error && (
           <div className="bg-red-50 border-l-4 border-red-400 text-red-800 px-4 sm:px-6 py-3 sm:py-4 rounded-lg mb-6 flex items-center gap-3 shadow-md">
             <span className="material-icons text-red-500">error</span>
@@ -437,16 +437,13 @@ const ActivitesPage = () => {
           </div>
         )}
 
-        {/* Carte principale avec design moderne */}
         <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden">
-          {/* En-tête de la carte avec couleur #B6D8F2 */}
           <div style={{ backgroundColor: '#B6D8F2' }} className="px-4 sm:px-8 py-4 sm:py-6">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">Liste des Participants</h2>
             <p className="text-sm sm:text-base text-gray-700">Sélectionnez un événement pour voir les participants</p>
           </div>
 
           <div className="p-4 sm:p-8">
-            {/* Sélecteur d'événement */}
             <div className="mb-6 sm:mb-8">
               <label className="block text-sm font-semibold text-gray-700 mb-2 sm:mb-3 flex items-center gap-2">
                 <span className="material-icons text-indigo-500">event</span>
@@ -470,7 +467,7 @@ const ActivitesPage = () => {
                   <option value="">Choisissez un événement dans la liste</option>
                   {evenements.map((evt) => (
                     <option key={evt.id_evenement} value={evt.id_evenement}>
-                      {evt.titre} • Code: {evt.code_evenement} • {evt.nombre_participants_actuels}/{evt.nombre_places} participants
+                      {evt.titre} - Code: {evt.code_evenement} - {evt.nombre_participants_actuels}/{evt.nombre_places} participants
                     </option>
                   ))}
                 </select>
@@ -479,7 +476,6 @@ const ActivitesPage = () => {
                 </span>
               </div>
 
-              {/* Informations sur l'événement sélectionné */}
               {selectedEvenement && (
                 <div className="mt-4 p-4 sm:p-5 bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl border-2 border-pink-200">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -499,7 +495,6 @@ const ActivitesPage = () => {
               )}
             </div>
 
-            {/* Barre de recherche */}
             {selectedEvenement && participants.length > 0 && (
               <div className="mb-6">
                 <div className="relative">
@@ -517,7 +512,6 @@ const ActivitesPage = () => {
               </div>
             )}
 
-            {/* Tableau des participants */}
             {isLoading ? (
               <div className="flex items-center justify-center py-20">
                 <div className="flex flex-col items-center gap-4">
@@ -555,9 +549,7 @@ const ActivitesPage = () => {
                         return (
                           <tr 
                             key={participant.id_participation}
-                            className={`${
-                              index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                            } hover:bg-pink-50 transition-colors`}
+                            className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-pink-50 transition-colors`}
                           >
                             <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium text-gray-900">
                               {participant.nom}

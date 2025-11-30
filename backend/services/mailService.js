@@ -1,3 +1,4 @@
+// services/mailService.js
 const nodemailer = require('nodemailer');
 
 // Configuration du transporteur email
@@ -6,6 +7,15 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD
+  }
+});
+
+// Vérifier la configuration
+transporter.verify(function(error, success) {
+  if (error) {
+    console.error('❌ Erreur configuration email:', error);
+  } else {
+    console.log('✅ Service email prêt à envoyer des messages');
   }
 });
 
@@ -26,6 +36,8 @@ const formatDate = (dateString) => {
 // Email d'acceptation
 const sendAcceptanceEmail = async (email, prenom, nom, titre, dateEvenement, lieu) => {
   try {
+    console.log('📧 Envoi email d\'acceptation à:', email);
+    
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -79,6 +91,8 @@ const sendAcceptanceEmail = async (email, prenom, nom, titre, dateEvenement, lie
 // Email de refus
 const sendRejectionEmail = async (email, prenom, nom, titre, raison) => {
   try {
+    console.log('📧 Envoi email de refus à:', email);
+    
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -98,7 +112,7 @@ const sendRejectionEmail = async (email, prenom, nom, titre, raison) => {
             
             <div style="background: white; border-left: 4px solid #f5576c; padding: 20px; margin: 20px 0; border-radius: 4px;">
               <h3 style="margin-top: 0; color: #333;">${titre}</h3>
-              <p style="margin: 10px 0;"><strong>Raison :</strong> ${raison}</p>
+              ${raison ? `<p style="margin: 10px 0;"><strong>Raison :</strong> ${raison}</p>` : ''}
             </div>
             
             <p style="color: #555; line-height: 1.6;">
@@ -131,6 +145,8 @@ const sendRejectionEmail = async (email, prenom, nom, titre, raison) => {
 // Email de confirmation d'inscription initiale
 const sendRegistrationConfirmationEmail = async (email, prenom, nom, titre, code) => {
   try {
+    console.log('📧 Envoi email de confirmation d\'inscription à:', email);
+    
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -177,118 +193,8 @@ const sendRegistrationConfirmationEmail = async (email, prenom, nom, titre, code
   }
 };
 
-// 🆕 Email de réinitialisation du mot de passe
-const sendPasswordResetEmail = async (email, prenom, nom, resetUrl) => {
-  try {
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: '🔑 Réinitialisation de votre mot de passe - Evenia',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
-            <h1 style="color: white; margin: 0;">🔑 Réinitialisation du mot de passe</h1>
-          </div>
-          
-          <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px;">
-            <p style="color: #333; font-size: 16px;">Bonjour <strong>${prenom} ${nom}</strong>,</p>
-            
-            <p style="color: #555; line-height: 1.6;">
-              Vous avez demandé à réinitialiser votre mot de passe sur Evenia. Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe :
-            </p>
-            
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="${resetUrl}" 
-                 style="display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
-                Réinitialiser mon mot de passe
-              </a>
-            </div>
-            
-            <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px;">
-              <p style="margin: 0; color: #856404; font-size: 14px;">
-                <strong>⚠️ Important :</strong> Ce lien est valable pendant 1 heure. Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.
-              </p>
-            </div>
-            
-            <p style="color: #999; font-size: 12px; margin-top: 20px;">
-              Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre navigateur :<br>
-              <a href="${resetUrl}" style="color: #667eea; word-break: break-all;">${resetUrl}</a>
-            </p>
-            
-            <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
-            
-            <p style="color: #999; font-size: 12px; text-align: center;">
-              © 2025 Evenia - Plateforme de Gestion d'Événements
-            </p>
-          </div>
-        </div>
-      `
-    };
-    
-    await transporter.sendMail(mailOptions);
-    console.log('✅ Email de réinitialisation envoyé à:', email);
-    return true;
-  } catch (error) {
-    console.error('❌ Erreur envoi email réinitialisation:', error);
-    throw error;
-  }
-};
-
-// 🆕 Email de confirmation de changement de mot de passe
-const sendPasswordChangedEmail = async (email, prenom, nom) => {
-  try {
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: '✅ Votre mot de passe a été modifié - Evenia',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
-            <h1 style="color: white; margin: 0;">✅ Mot de passe modifié</h1>
-          </div>
-          
-          <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px;">
-            <p style="color: #333; font-size: 16px;">Bonjour <strong>${prenom} ${nom}</strong>,</p>
-            
-            <p style="color: #555; line-height: 1.6;">
-              Votre mot de passe a été modifié avec succès. Vous pouvez maintenant vous connecter à Evenia avec votre nouveau mot de passe.
-            </p>
-            
-            <div style="background: #d1fae5; border-left: 4px solid #10b981; padding: 15px; margin: 20px 0; border-radius: 4px;">
-              <p style="margin: 0; color: #065f46; font-size: 14px;">
-                <strong>✅ Confirmation :</strong> Votre compte est sécurisé avec votre nouveau mot de passe.
-              </p>
-            </div>
-            
-            <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px;">
-              <p style="margin: 0; color: #856404; font-size: 14px;">
-                <strong>⚠️ Important :</strong> Si vous n'avez pas effectué cette modification, contactez-nous immédiatement.
-              </p>
-            </div>
-            
-            <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
-            
-            <p style="color: #999; font-size: 12px; text-align: center;">
-              © 2025 Evenia - Plateforme de Gestion d'Événements
-            </p>
-          </div>
-        </div>
-      `
-    };
-    
-    await transporter.sendMail(mailOptions);
-    console.log('✅ Email de confirmation de changement envoyé à:', email);
-    return true;
-  } catch (error) {
-    console.error('❌ Erreur envoi email confirmation changement:', error);
-    throw error;
-  }
-};
-
 module.exports = {
   sendAcceptanceEmail,
   sendRejectionEmail,
-  sendRegistrationConfirmationEmail,
-  sendPasswordResetEmail,
-  sendPasswordChangedEmail
+  sendRegistrationConfirmationEmail
 };

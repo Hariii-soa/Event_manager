@@ -10,10 +10,13 @@ require('./config/passport');
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
+const passwordResetRoutes = require('./routes/passwordResetRoutes');
 const evenementRoutes = require('./routes/evenementRoutes');
 const participantRoutes = require('./routes/participantRoutes');
 const activitesRoutes = require('./routes/activitesRoutes');
 const adminAuthRoutes = require('./routes/adminAuthRoutes');
+const notificationRoutes = require('./routes/notificationRoutes'); // ✅ NOUVEAU
+
 
 const app = express();
 
@@ -40,6 +43,8 @@ console.log('✅ Route /api/auth configurée');
 app.use('/api/admin-auth', adminAuthRoutes);
 console.log('✅ Route /api/admin-auth configurée');
 
+app.use('/api/password-reset', passwordResetRoutes);
+
 app.use('/api/evenements', evenementRoutes);
 console.log('✅ Route /api/evenements configurée');
 
@@ -48,6 +53,10 @@ console.log('✅ Route /api/participant configurée');
 
 app.use('/api/activites', activitesRoutes);
 console.log('✅ Route /api/activites configurée');
+
+// ✅ NOUVELLE ROUTE: Notifications
+app.use('/api/notifications', notificationRoutes);
+console.log('✅ Route /api/notifications configurée');
 
 // Route de test
 app.get('/api/health', (req, res) => {
@@ -60,7 +69,8 @@ app.get('/api/health', (req, res) => {
       '/api/admin-auth',
       '/api/evenements',
       '/api/participant',
-      '/api/activites'
+      '/api/activites',
+      '/api/notifications'
     ]
   });
 });
@@ -90,8 +100,8 @@ app.listen(PORT, () => {
   console.log('\n' + '='.repeat(60));
   console.log('✅ SERVEUR EVENIA DÉMARRÉ AVEC SUCCÈS');
   console.log('='.repeat(60));
-  console.log(`📍 Port: ${PORT}`);
-  console.log(`🌐 URL: http://localhost:${PORT}`);
+  console.log(`🌐 Port: ${PORT}`);
+  console.log(`🌍 URL: http://localhost:${PORT}`);
   console.log(`📱 Frontend: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
   console.log('\n📋 Routes disponibles:');
   console.log('   - POST   /api/auth/register');
@@ -101,6 +111,7 @@ app.listen(PORT, () => {
   console.log('   - GET    /api/participant/evenements-disponibles');
   console.log('   - GET    /api/participant/mes-participations');
   console.log('   - GET    /api/activites/evenements');
+  console.log('   - GET    /api/notifications ← NOUVEAU');
   console.log('   - GET    /api/health (test)');
   console.log('='.repeat(60) + '\n');
   

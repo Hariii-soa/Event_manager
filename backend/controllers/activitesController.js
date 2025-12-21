@@ -2,6 +2,7 @@
 const Participant = require('../models/participantModel');
 const Evenement = require('../models/evenementModel');
 const mailService = require('../services/mailService');
+const notificationService = require('../services/notificationService'); // ✅ NOUVEAU
 
 const ADMIN_EMAIL = 'harisoamarina21@gmail.com';
 
@@ -93,7 +94,7 @@ const getParticipantsByEvenement = async (req, res) => {
   }
 };
 
-// Accepter une participation avec envoi d'email
+// Accepter une participation avec envoi d'email et notification
 const accepterParticipation = async (req, res) => {
   try {
     const { id_participation } = req.params;
@@ -130,13 +131,28 @@ const accepterParticipation = async (req, res) => {
       console.log('✅ Email d\'acceptation envoyé avec succès');
     } catch (emailError) {
       console.error('⚠️ Erreur envoi email (participation acceptée quand même):', emailError);
-      // On continue même si l'email échoue
+    }
+    
+    // 🔔 NOUVEAU: CRÉER NOTIFICATION IN-APP
+    try {
+      await notificationService.createAcceptationNotification(
+        participant.email,
+        participant.prenom,
+        participant.nom,
+        evenement.titre,
+        evenement.date_evenement,
+        evenement.lieu,
+        participant.id_evenement
+      );
+      console.log('✅ Notification in-app créée');
+    } catch (notifError) {
+      console.error('⚠️ Erreur notification (participation acceptée quand même):', notifError);
     }
     
     console.log('✅ Participation acceptée');
     
     res.status(200).json({
-      message: 'Participation acceptée et email envoyé',
+      message: 'Participation acceptée, email et notification envoyés',
       participation: participationMiseAJour
     });
   } catch (error) {
@@ -145,7 +161,7 @@ const accepterParticipation = async (req, res) => {
   }
 };
 
-// Refuser une participation avec envoi d'email
+// Refuser une participation avec envoi d'email et notification
 const refuserParticipation = async (req, res) => {
   try {
     const { id_participation } = req.params;
@@ -183,13 +199,27 @@ const refuserParticipation = async (req, res) => {
       console.log('✅ Email de refus envoyé avec succès');
     } catch (emailError) {
       console.error('⚠️ Erreur envoi email (participation refusée quand même):', emailError);
-      // On continue même si l'email échoue
+    }
+    
+    // 🔔 NOUVEAU: CRÉER NOTIFICATION IN-APP
+    try {
+      await notificationService.createRefusNotification(
+        participant.email,
+        participant.prenom,
+        participant.nom,
+        evenement.titre,
+        raison || 'Aucune raison spécifiée',
+        participant.id_evenement
+      );
+      console.log('✅ Notification in-app créée');
+    } catch (notifError) {
+      console.error('⚠️ Erreur notification (participation refusée quand même):', notifError);
     }
     
     console.log('✅ Participation refusée');
     
     res.status(200).json({
-      message: 'Participation refusée et email envoyé',
+      message: 'Participation refusée, email et notification envoyés',
       participation: participationMiseAJour
     });
   } catch (error) {

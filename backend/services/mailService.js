@@ -33,6 +33,131 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString('fr-FR', options);
 };
 
+// ✅ NOUVEAU: Email de réinitialisation de mot de passe
+const sendPasswordResetEmail = async (email, prenom, nom, resetUrl) => {
+  try {
+    console.log('📧 Envoi email de réinitialisation à:', email);
+    
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: '🔐 Réinitialisation de votre mot de passe - Evenia',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+            <h1 style="color: white; margin: 0;">🔐 Réinitialisation de mot de passe</h1>
+          </div>
+          
+          <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px;">
+            <p style="color: #333; font-size: 16px;">Bonjour <strong>${prenom} ${nom}</strong>,</p>
+            
+            <p style="color: #555; line-height: 1.6;">
+              Vous avez demandé à réinitialiser votre mot de passe pour votre compte Evenia. 
+              Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe.
+            </p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${resetUrl}" 
+                 style="display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
+                Réinitialiser mon mot de passe
+              </a>
+            </div>
+            
+            <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px;">
+              <p style="margin: 0; color: #856404; font-size: 14px;">
+                <strong>⏰ Important :</strong><br>
+                Ce lien est valable pendant <strong>1 heure</strong>.
+              </p>
+            </div>
+            
+            <p style="color: #555; font-size: 14px; line-height: 1.6;">
+              Si vous n'avez pas demandé cette réinitialisation, vous pouvez ignorer cet email en toute sécurité. 
+              Votre mot de passe actuel restera inchangé.
+            </p>
+            
+            <div style="background: #f0f0f0; padding: 15px; margin: 20px 0; border-radius: 4px;">
+              <p style="margin: 0; color: #666; font-size: 12px;">
+                <strong>Lien direct (si le bouton ne fonctionne pas) :</strong><br>
+                <a href="${resetUrl}" style="color: #667eea; word-break: break-all;">${resetUrl}</a>
+              </p>
+            </div>
+            
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+            
+            <p style="color: #999; font-size: 12px; text-align: center;">
+              © 2025 Evenia - Plateforme de Gestion d'Événements<br>
+              Pour toute question, contactez notre support.
+            </p>
+          </div>
+        </div>
+      `
+    };
+    
+    await transporter.sendMail(mailOptions);
+    console.log('✅ Email de réinitialisation envoyé à:', email);
+    return true;
+  } catch (error) {
+    console.error('❌ Erreur envoi email réinitialisation:', error);
+    throw error;
+  }
+};
+
+// ✅ NOUVEAU: Email de confirmation de changement de mot de passe
+const sendPasswordChangedEmail = async (email, prenom, nom) => {
+  try {
+    console.log('📧 Envoi email de confirmation de changement à:', email);
+    
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: '✅ Votre mot de passe a été modifié - Evenia',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+            <h1 style="color: white; margin: 0;">✅ Mot de passe modifié</h1>
+          </div>
+          
+          <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px;">
+            <p style="color: #333; font-size: 16px;">Bonjour <strong>${prenom} ${nom}</strong>,</p>
+            
+            <p style="color: #555; line-height: 1.6;">
+              Votre mot de passe a été modifié avec succès. Vous pouvez maintenant vous connecter 
+              avec votre nouveau mot de passe.
+            </p>
+            
+            <div style="background: #d4edda; border-left: 4px solid #28a745; padding: 15px; margin: 20px 0; border-radius: 4px;">
+              <p style="margin: 0; color: #155724; font-size: 14px;">
+                <strong>🔐 Sécurité :</strong><br>
+                Si vous n'êtes pas à l'origine de ce changement, contactez immédiatement notre support.
+              </p>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/login" 
+                 style="display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
+                Se connecter
+              </a>
+            </div>
+            
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+            
+            <p style="color: #999; font-size: 12px; text-align: center;">
+              © 2025 Evenia - Plateforme de Gestion d'Événements
+            </p>
+          </div>
+        </div>
+      `
+    };
+    
+    await transporter.sendMail(mailOptions);
+    console.log('✅ Email de confirmation envoyé à:', email);
+    return true;
+  } catch (error) {
+    console.error('❌ Erreur envoi email confirmation:', error);
+    throw error;
+  }
+};
+
 // Email d'acceptation
 const sendAcceptanceEmail = async (email, prenom, nom, titre, dateEvenement, lieu) => {
   try {
@@ -260,6 +385,8 @@ const sendEventReminderEmail = async (email, prenom, nom, titre, dateEvenement, 
 };
 
 module.exports = {
+  sendPasswordResetEmail,        // ✅ NOUVEAU
+  sendPasswordChangedEmail,      // ✅ NOUVEAU
   sendAcceptanceEmail,
   sendRejectionEmail,
   sendRegistrationConfirmationEmail,

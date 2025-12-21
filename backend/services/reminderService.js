@@ -2,6 +2,7 @@
 const cron = require('node-cron');
 const db = require('../config/db');
 const mailService = require('./mailService');
+const notificationService = require('./notificationService');
 
 // Fonction pour envoyer les rappels 72h avant l'événement
 const sendEventReminders = async () => {
@@ -69,6 +70,12 @@ const sendEventReminders = async () => {
           participant.description,
           participant.code_evenement
         );
+        // 🔔 Créer notification in-app
+await notificationService.createRappelNotification(
+  participant.email, participant.prenom, participant.nom,
+  evenement.titre, evenement.date_evenement, evenement.lieu,
+  evenement.code_evenement, evenement.id_evenement
+);
         
         // Marquer ce rappel comme envoyé dans la base de données
         await markReminderAsSent(participant.id_participation);

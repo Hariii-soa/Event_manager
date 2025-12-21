@@ -1,7 +1,7 @@
-// src/components/sidebar/Sidebar.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CreateEventModal from '@/components/modal/EventCreationModal';
+import NotificationBell from '@/components/notifications/NotificationBell';
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -54,9 +54,7 @@ const Sidebar = () => {
         <div className="p-4 sm:p-6 border-b border-gray-200">
           <div
             className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition"
-            onClick={() => {
-              handleNavigation('/');
-            }}
+            onClick={() => handleNavigation('/')}
           >
             <div className="w-14 h-14 sm:w-20 sm:h-20 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
               <img src="/logo.png" alt="Evenia" className="w-14 h-14 sm:w-20 sm:h-20" />
@@ -65,6 +63,8 @@ const Sidebar = () => {
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Evenia</h1>
               <p className="text-sm sm:text-base text-gray-500">Gestion d'événements</p>
             </div>
+
+            
           </div>
         </div>
 
@@ -78,12 +78,12 @@ const Sidebar = () => {
           <div className="mb-4">
             <p className="text-xs text-gray-600 mb-2">Créez et gérez vos événements</p>
 
-            {/* Bouton Organiser - Ouvre le modal de création */}
+            {/* Bouton Organiser */}
             <button
               onClick={() => {
                 setIsEventModalOpen(true);
                 closeMobileMenu();
-                handleNavigation('/dashboard/mes-evenements')
+                handleNavigation('/dashboard/mes-evenements');
               }}
               className="w-full flex items-center gap-3 px-4 py-3 bg-pink-50 hover:bg-pink-100 rounded-xl transition mb-2 group"
             >
@@ -96,7 +96,7 @@ const Sidebar = () => {
               </span>
             </button>
 
-            {/* Bouton Activités - Redirige vers mes-evenements */}
+            {/* Bouton Activités */}
             <button
               onClick={() => handleNavigation('/dashboard/activites')}
               className="w-full flex items-center gap-3 px-4 py-3 bg-yellow-50 hover:bg-yellow-100 rounded-xl transition"

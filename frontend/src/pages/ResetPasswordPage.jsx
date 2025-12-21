@@ -1,7 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import AuthLayout from '../components/auth/AuthLayout';
 
 const ResetPasswordPage = () => {
   const { token } = useParams();
@@ -26,6 +24,7 @@ const ResetPasswordPage = () => {
         setIsVerifying(true);
         console.log('🔍 Vérification du token...');
 
+        // ✅ CORRECTION: Utiliser la bonne route du backend
         const response = await fetch(`http://localhost:3000/api/password-reset/verify/${token}`);
         const data = await response.json();
 
@@ -82,8 +81,9 @@ const ResetPasswordPage = () => {
         return;
       }
 
-      console.log('🔑 Réinitialisation du mot de passe...');
+      console.log('🔒 Réinitialisation du mot de passe...');
 
+      // ✅ CORRECTION: Utiliser la bonne route du backend
       const response = await fetch('http://localhost:3000/api/password-reset/reset', {
         method: 'POST',
         headers: {
@@ -116,44 +116,23 @@ const ResetPasswordPage = () => {
     }
   };
 
+  // État de vérification du token
   if (isVerifying) {
     return (
-      <AuthLayout
-        sideContent={
-          <>
-            <img
-              src="/auth.png"
-              alt="Sécurité"
-              className="w-full max-w-xs sm:max-w-sm md:max-w-lg mb-4 sm:mb-6 shadow-lg rounded-xl mx-auto"
-            />
-            <h2 className="mb-2 sm:mb-3 text-xl sm:text-2xl font-bold text-gray-800 px-4">
-              Sécurisez votre compte
-            </h2>
-          </>
-        }
-      >
-        <div className="w-full text-center py-12">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50">
+        <div className="text-center">
           <span className="material-icons text-6xl text-blue-500 animate-spin mb-4">refresh</span>
           <p className="text-gray-600">Vérification du lien...</p>
         </div>
-      </AuthLayout>
+      </div>
     );
   }
 
+  // Token invalide
   if (!tokenValid) {
     return (
-      <AuthLayout
-        sideContent={
-          <>
-            <img
-              src="/auth.png"
-              alt="Sécurité"
-              className="w-full max-w-xs sm:max-w-sm md:max-w-lg mb-4 sm:mb-6 shadow-lg rounded-xl mx-auto"
-            />
-          </>
-        }
-      >
-        <div className="w-full text-center py-12">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 px-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 text-center">
           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="material-icons text-5xl text-red-500">error</span>
           </div>
@@ -166,36 +145,34 @@ const ResetPasswordPage = () => {
             Faire une nouvelle demande
           </Link>
         </div>
-      </AuthLayout>
+      </div>
     );
   }
 
+  // Formulaire de réinitialisation
   return (
-    <AuthLayout
-      sideContent={
-        <>
-          <img
-            src="/auth.png"
-            alt="Sécurité"
-            className="w-full max-w-xs sm:max-w-sm md:max-w-lg mb-4 sm:mb-6 shadow-lg rounded-xl mx-auto"
-          />
-          <h2 className="mb-2 sm:mb-3 text-xl sm:text-2xl font-bold text-gray-800 px-4">
-            Créez un nouveau mot de passe
-          </h2>
-          <p className="text-xs sm:text-sm leading-relaxed text-gray-600 px-4">
-            Choisissez un mot de passe sécurisé pour protéger votre compte Evenia.
-          </p>
-        </>
-      }
-    >
-      <div className="w-full">
-        <h1 className="mb-3 sm:mb-4 text-2xl sm:text-3xl font-bold text-gray-800">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 px-4">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8">
+        {/* Logo */}
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center">
+            <img src="/logo.png" alt="Evenia" className="w-14 h-14" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Evenia</h1>
+            <p className="text-sm text-gray-500">Gestion d'événements</p>
+          </div>
+        </div>
+
+        {/* Titre */}
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">
           Nouveau mot de passe
-        </h1>
-        <p className="mb-6 text-sm sm:text-base text-gray-600">
+        </h2>
+        <p className="text-gray-600 mb-6">
           Créez un mot de passe sécurisé d'au moins 6 caractères.
         </p>
 
+        {/* Message d'erreur */}
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
             <span className="material-icons text-red-600 text-sm">error</span>
@@ -203,6 +180,7 @@ const ResetPasswordPage = () => {
           </div>
         )}
 
+        {/* Message de succès */}
         {success ? (
           <div className="space-y-4">
             <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -229,9 +207,10 @@ const ResetPasswordPage = () => {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Nouveau mot de passe */}
             <div>
-              <label className="flex items-center mb-2 text-sm sm:text-base text-gray-700">
-                <span className="mr-2 text-lg sm:text-xl material-icons">lock</span>
+              <label className="flex items-center mb-2 text-gray-700">
+                <span className="material-icons mr-2">lock</span>
                 Nouveau mot de passe
               </label>
               <div className="relative">
@@ -241,7 +220,7 @@ const ResetPasswordPage = () => {
                   placeholder="••••••••"
                   value={formData.nouveauMotDePasse}
                   onChange={handleChange}
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 pr-10"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 pr-10"
                   required
                   disabled={isLoading}
                   minLength={6}
@@ -260,9 +239,10 @@ const ResetPasswordPage = () => {
               <p className="text-xs text-gray-500 mt-1">Minimum 6 caractères</p>
             </div>
 
+            {/* Confirmer le mot de passe */}
             <div>
-              <label className="flex items-center mb-2 text-sm sm:text-base text-gray-700">
-                <span className="mr-2 text-lg sm:text-xl material-icons">lock</span>
+              <label className="flex items-center mb-2 text-gray-700">
+                <span className="material-icons mr-2">lock</span>
                 Confirmer le mot de passe
               </label>
               <div className="relative">
@@ -272,7 +252,7 @@ const ResetPasswordPage = () => {
                   placeholder="••••••••"
                   value={formData.confirmMotDePasse}
                   onChange={handleChange}
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 pr-10"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 pr-10"
                   required
                   disabled={isLoading}
                 />
@@ -289,10 +269,11 @@ const ResetPasswordPage = () => {
               </div>
             </div>
 
+            {/* Bouton de soumission */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 sm:py-3 text-sm sm:text-base rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -309,17 +290,18 @@ const ResetPasswordPage = () => {
           </form>
         )}
 
+        {/* Lien retour */}
         <div className="mt-6 text-center">
           <Link
             to="/login"
-            className="text-sm sm:text-base text-blue-600 hover:text-blue-700 font-medium flex items-center justify-center gap-1"
+            className="text-blue-600 hover:text-blue-700 font-medium flex items-center justify-center gap-1"
           >
             <span className="material-icons text-sm">arrow_back</span>
             Retour à la connexion
           </Link>
         </div>
       </div>
-    </AuthLayout>
+    </div>
   );
 };
 

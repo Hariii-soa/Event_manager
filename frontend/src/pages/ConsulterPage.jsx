@@ -161,7 +161,7 @@ const ConsulterPage = () => {
             {/* Header du modal */}
             <div className="bg-gradient-to-r from-pink-100 to-purple-100 px-6 py-5 flex items-center gap-4">
               <div className="w-14 h-14 bg-white/80 rounded-full flex items-center justify-center">
-                <span className="material-icons text-pink-500 text-3xl">person_search</span>
+                <span className="material-icons  bg-pink-200 text-3xl">person_search</span>
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-900">Rechercher un participant</h2>
@@ -171,16 +171,6 @@ const ConsulterPage = () => {
 
             {/* Formulaire de recherche */}
             <form onSubmit={handleSearch} className="p-6 space-y-5">
-              <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <span className="material-icons text-blue-500 text-xl">info</span>
-                  <div>
-                    <p className="text-sm text-blue-800 font-medium">
-                      Utilisez l'email comme indice pour identifier le participant
-                    </p>
-                  </div>
-                </div>
-              </div>
 
               {error && (
                 <div className="bg-red-50 border-l-4 border-red-400 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
@@ -218,7 +208,7 @@ const ConsulterPage = () => {
                 <button
                   type="submit"
                   disabled={isSearching}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl hover:from-pink-600 hover:to-purple-600 transition font-medium text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r bg-pink-300 text-white rounded-xl hover:from-pink-300 hover:to-purple-300 transition font-medium text-sm disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {isSearching ? (
                     <>

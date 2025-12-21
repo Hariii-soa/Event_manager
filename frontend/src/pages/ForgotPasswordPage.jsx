@@ -1,7 +1,5 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import AuthLayout from '../components/auth/AuthLayout';
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
@@ -32,6 +30,7 @@ const ForgotPasswordPage = () => {
 
       console.log('📧 Demande de réinitialisation pour:', email);
 
+      // ✅ CORRECTION: Utiliser la bonne route du backend
       const response = await fetch('http://localhost:3000/api/password-reset/request', {
         method: 'POST',
         headers: {
@@ -57,31 +56,28 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <AuthLayout
-      sideContent={
-        <>
-          <img
-            src="/auth.png"
-            alt="Sécurité"
-            className="w-full max-w-xs sm:max-w-sm md:max-w-lg mb-4 sm:mb-6 shadow-lg rounded-xl mx-auto"
-          />
-          <h2 className="mb-2 sm:mb-3 text-xl sm:text-2xl font-bold text-gray-800 px-4">
-            Sécurisez votre compte
-          </h2>
-          <p className="text-xs sm:text-sm leading-relaxed text-gray-600 px-4">
-            Réinitialisez votre mot de passe en toute sécurité et reprenez le contrôle de votre compte Evenia.
-          </p>
-        </>
-      }
-    >
-      <div className="w-full">
-        <h1 className="mb-3 sm:mb-4 text-2xl sm:text-3xl font-bold text-gray-800">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 px-4">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8">
+        {/* Logo */}
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center">
+            <img src="/logo.png" alt="Evenia" className="w-14 h-14" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Evenia</h1>
+            <p className="text-sm text-gray-500">Gestion d'événements</p>
+          </div>
+        </div>
+
+        {/* Titre */}
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">
           Mot de passe oublié ?
-        </h1>
-        <p className="mb-6 text-sm sm:text-base text-gray-600">
+        </h2>
+        <p className="text-gray-600 mb-6">
           Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.
         </p>
 
+        {/* Message d'erreur */}
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
             <span className="material-icons text-red-600 text-sm">error</span>
@@ -89,6 +85,7 @@ const ForgotPasswordPage = () => {
           </div>
         )}
 
+        {/* Message de succès */}
         {success ? (
           <div className="space-y-4">
             <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -126,9 +123,10 @@ const ForgotPasswordPage = () => {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Champ email */}
             <div>
-              <label className="flex items-center mb-2 text-sm sm:text-base text-gray-700">
-                <span className="mr-2 text-lg sm:text-xl material-icons">email</span>
+              <label className="flex items-center mb-2 text-gray-700">
+                <span className="material-icons mr-2">email</span>
                 Adresse email
               </label>
               <input
@@ -137,16 +135,17 @@ const ForgotPasswordPage = () => {
                 placeholder="votre@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
                 required
                 disabled={isLoading}
               />
             </div>
 
+            {/* Bouton d'envoi */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 sm:py-3 text-sm sm:text-base rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -163,17 +162,18 @@ const ForgotPasswordPage = () => {
           </form>
         )}
 
+        {/* Lien retour */}
         <div className="mt-6 text-center">
           <Link
             to="/login"
-            className="text-sm sm:text-base text-blue-600 hover:text-blue-700 font-medium flex items-center justify-center gap-1"
+            className="text-blue-600 hover:text-blue-700 font-medium flex items-center justify-center gap-1"
           >
             <span className="material-icons text-sm">arrow_back</span>
             Retour à la connexion
           </Link>
         </div>
       </div>
-    </AuthLayout>
+    </div>
   );
 };
 

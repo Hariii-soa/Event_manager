@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 
@@ -14,46 +13,118 @@ const AuthForm = ({ type }) => {
   });
   const { login } = useAuth();
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  // ✅ Validation du téléphone (exactement 10 chiffres)
+  const validatePhone = (phone) => {
+    const phoneRegex = /^[0-9]{10}$/;
+    return phoneRegex.test(phone);
   };
 
-  // Gestion de la connexion Google OAuth
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    const userStr = urlParams.get('user');
-  
-    if (token && userStr) {
-      try {
-        const user = JSON.parse(decodeURIComponent(userStr));
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        // Nettoyer l'URL
-        window.history.replaceState({}, document.title, '/');
-        
-        // Rediriger
-        window.location.href = '/dashboard/mes-evenements';
-      } catch (error) {
-        console.error('Erreur parsing user:', error);
-        setError('Erreur lors de la connexion avec Google');
+  // ✅ Validation du mot de passe (minimum 8 caractères)
+  const validatePassword = (password) => {
+    return password.length >= 8;
+  };
+
+  // ✅ Validation de l'email
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // ✅ Gestion du changement avec validation en temps réel
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    let processedValue = value;
+
+    // Convertir le nom en majuscules automatiquement
+    if (name === 'nom') {
+      processedValue = value.toUpperCase();
+    }
+
+    setFormData({ ...formData, [name]: processedValue });
+
+    // Validation en temps réel
+    const errors = { ...fieldErrors };
+
+    if (name === 'tel' && processedValue && !validatePhone(processedValue)) {
+      errors.tel = 'Le numéro doit contenir exactement 10 chiffres';
+    } else if (name === 'tel') {
+      delete errors.tel;
+    }
+
+    if (name === 'motDePasse' && processedValue && !validatePassword(processedValue)) {
+      errors.motDePasse = 'Le mot de passe doit contenir au moins 8 caractères';
+    } else if (name === 'motDePasse') {
+      delete errors.motDePasse;
+    }
+
+    if (name === 'confirmPassword' && processedValue !== formData.motDePasse) {
+      errors.confirmPassword = 'Les mots de passe ne correspondent pas';
+    } else if (name === 'confirmPassword') {
+      delete errors.confirmPassword;
+    }
+
+    if (name === 'email' && processedValue && !validateEmail(processedValue)) {
+      errors.email = 'Email invalide';
+    } else if (name === 'email') {
+      delete errors.email;
+    }
+
+    setFieldErrors(errors);
+  };
+
+  // ✅ Validation avant soumission
+  const validateForm = () => {
+    const errors = {};
+
+    if (type === 'register') {
+      if (!formData.nom) errors.nom = 'Le nom est requis';
+      if (!formData.prenom) errors.prenom = 'Le prénom est requis';
+      
+      if (!formData.tel) {
+        errors.tel = 'Le numéro de téléphone est requis';
+      } else if (!validatePhone(formData.tel)) {
+        errors.tel = 'Le numéro doit contenir exactement 10 chiffres';
+      }
+
+      if (!validatePassword(formData.motDePasse)) {
+        errors.motDePasse = 'Le mot de passe doit contenir au moins 8 caractères';
+      }
+
+      if (formData.motDePasse !== formData.confirmPassword) {
+        errors.confirmPassword = 'Les mots de passe ne correspondent pas';
       }
     }
-  }, []);
+
+    if (!formData.email) {
+      errors.email = 'L\'email est requis';
+    } else if (!validateEmail(formData.email)) {
+      errors.email = 'Email invalide';
+    }
+
+    if (!formData.motDePasse) {
+      errors.motDePasse = 'Le mot de passe est requis';
+    } else if (type === 'login' && formData.motDePasse.length < 8) {
+      errors.motDePasse = 'Le mot de passe doit contenir au moins 8 caractères';
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    if (type === 'register') {
-      if (formData.motDePasse !== formData.confirmPassword) {
-        setError('Les mots de passe ne correspondent pas');
-        return;
-      }
+    // ✅ Valider le formulaire avant soumission
+    if (!validateForm()) {
+      setError('Veuillez corriger les erreurs dans le formulaire');
+      return;
+    }
 
+    if (type === 'register') {
       const body = {
         nom: formData.nom,
         prenom: formData.prenom,
@@ -115,8 +186,10 @@ const AuthForm = ({ type }) => {
       <h1 className="mb-3 sm:mb-4 text-2xl sm:text-3xl font-bold text-gray-800">
         {type === 'register' ? 'Créer un compte' : 'Se connecter'}
       </h1>
+      
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+          <span className="material-icons text-red-600 text-sm">error</span>
           <p className="text-red-600 text-sm">{error}</p>
         </div>
       )}
@@ -127,22 +200,31 @@ const AuthForm = ({ type }) => {
             <div>
               <label className="flex items-center mb-2 text-sm sm:text-base text-gray-700">
                 <span className="mr-2 text-lg sm:text-xl material-icons">person</span>
-                Nom
+                Nom <span className="text-red-500 ml-1">*</span>
               </label>
               <input
                 type="text"
                 name="nom"
-                placeholder="Votre nom"
+                placeholder="VOTRE NOM"
                 value={formData.nom}
                 onChange={handleChange}
-                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
+                className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 rounded-lg focus:outline-none uppercase ${
+                  fieldErrors.nom ? 'border-red-400 focus:border-red-400' : 'border-gray-300 focus:border-blue-400'
+                }`}
                 required
               />
+              {fieldErrors.nom && (
+                <p className="text-red-600 text-xs mt-1 flex items-center gap-1">
+                  <span className="material-icons text-xs">error</span>
+                  {fieldErrors.nom}
+                </p>
+              )}
+              
             </div>
             <div>
               <label className="flex items-center mb-2 text-sm sm:text-base text-gray-700">
                 <span className="mr-2 text-lg sm:text-xl material-icons">person</span>
-                Prénom
+                Prénom <span className="text-red-500 ml-1">*</span>
               </label>
               <input
                 type="text"
@@ -150,9 +232,17 @@ const AuthForm = ({ type }) => {
                 placeholder="Votre prénom"
                 value={formData.prenom}
                 onChange={handleChange}
-                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
+                className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 rounded-lg focus:outline-none ${
+                  fieldErrors.prenom ? 'border-red-400 focus:border-red-400' : 'border-gray-300 focus:border-blue-400'
+                }`}
                 required
               />
+              {fieldErrors.prenom && (
+                <p className="text-red-600 text-xs mt-1 flex items-center gap-1">
+                  <span className="material-icons text-xs">error</span>
+                  {fieldErrors.prenom}
+                </p>
+              )}
             </div>
           </div>
         )}
@@ -160,7 +250,7 @@ const AuthForm = ({ type }) => {
         <div>
           <label className="flex items-center mb-2 text-sm sm:text-base text-gray-700">
             <span className="mr-2 text-lg sm:text-xl material-icons">email</span>
-            Email
+            Email <span className="text-red-500 ml-1">*</span>
           </label>
           <input
             type="email"
@@ -168,33 +258,51 @@ const AuthForm = ({ type }) => {
             placeholder="votre@email.com"
             value={formData.email}
             onChange={handleChange}
-            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
+            className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 rounded-lg focus:outline-none ${
+              fieldErrors.email ? 'border-red-400 focus:border-red-400' : 'border-gray-300 focus:border-blue-400'
+            }`}
             required
           />
+          {fieldErrors.email && (
+            <p className="text-red-600 text-xs mt-1 flex items-center gap-1">
+              <span className="material-icons text-xs">error</span>
+              {fieldErrors.email}
+            </p>
+          )}
         </div>
 
         {type === 'register' && (
           <div>
             <label className="flex items-center mb-2 text-sm sm:text-base text-gray-700">
               <span className="mr-2 text-lg sm:text-xl material-icons">phone</span>
-              Numéro de téléphone
+              Numéro de téléphone <span className="text-red-500 ml-1">*</span>
             </label>
             <input
               type="tel"
               name="tel"
-              placeholder="Ex: +33 6 12 34 56 78"
+              placeholder="0612345678"
               value={formData.tel}
               onChange={handleChange}
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
+              maxLength="10"
+              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 rounded-lg focus:outline-none ${
+                fieldErrors.tel ? 'border-red-400 focus:border-red-400' : 'border-gray-300 focus:border-blue-400'
+              }`}
               required
             />
+            {fieldErrors.tel && (
+              <p className="text-red-600 text-xs mt-1 flex items-center gap-1">
+                <span className="material-icons text-xs">error</span>
+                {fieldErrors.tel}
+              </p>
+            )}
+            <p className="text-gray-500 text-xs mt-1">Format: 10 chiffres (exemple: 0612345678)</p>
           </div>
         )}
 
         <div>
           <label className="flex items-center mb-2 text-sm sm:text-base text-gray-700">
             <span className="mr-2 text-lg sm:text-xl material-icons">lock</span>
-            Mot de passe
+            Mot de passe <span className="text-red-500 ml-1">*</span>
           </label>
           <input
             type="password"
@@ -202,16 +310,25 @@ const AuthForm = ({ type }) => {
             placeholder="••••••••"
             value={formData.motDePasse}
             onChange={handleChange}
-            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
+            className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 rounded-lg focus:outline-none ${
+              fieldErrors.motDePasse ? 'border-red-400 focus:border-red-400' : 'border-gray-300 focus:border-blue-400'
+            }`}
             required
           />
+          {fieldErrors.motDePasse && (
+            <p className="text-red-600 text-xs mt-1 flex items-center gap-1">
+              <span className="material-icons text-xs">error</span>
+              {fieldErrors.motDePasse}
+            </p>
+          )}
+          <p className="text-gray-500 text-xs mt-1">Minimum 8 caractères</p>
         </div>
 
         {type === 'register' && (
           <div>
             <label className="flex items-center mb-2 text-sm sm:text-base text-gray-700">
               <span className="mr-2 text-lg sm:text-xl material-icons">lock</span>
-              Confirmer mot de passe
+              Confirmer mot de passe <span className="text-red-500 ml-1">*</span>
             </label>
             <input
               type="password"
@@ -219,13 +336,20 @@ const AuthForm = ({ type }) => {
               placeholder="••••••••"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
+              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border-2 rounded-lg focus:outline-none ${
+                fieldErrors.confirmPassword ? 'border-red-400 focus:border-red-400' : 'border-gray-300 focus:border-blue-400'
+              }`}
               required
             />
+            {fieldErrors.confirmPassword && (
+              <p className="text-red-600 text-xs mt-1 flex items-center gap-1">
+                <span className="material-icons text-xs">error</span>
+                {fieldErrors.confirmPassword}
+              </p>
+            )}
           </div>
         )}
 
-        {/* 🆕 AJOUT : Lien "Mot de passe oublié" */}
         {type === 'login' && (
           <div className="flex justify-end">
             <Link
@@ -258,6 +382,7 @@ const AuthForm = ({ type }) => {
           </button>
         </div>
       </div>
+      
       <p className="mt-6 text-center text-sm sm:text-base">
         {type === 'register' ? 'Déjà un compte ? ' : 'Pas de compte ? '}
         <Link

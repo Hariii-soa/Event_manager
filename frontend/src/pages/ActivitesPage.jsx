@@ -78,7 +78,7 @@ const AdminPasswordModal = ({ isOpen, onClose, onSuccess }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-        <div style={{ backgroundColor: '#F4CFDF' }} className="px-6 py-5 flex items-center gap-4">
+        <div style={{ backgroundColor: '#9AC8EB' }} className="px-6 py-5 flex items-center gap-4">
           <div className="w-14 h-14 bg-white/30 rounded-xl flex items-center justify-center backdrop-blur-sm">
             <span className="material-icons text-gray-800 text-3xl">admin_panel_settings</span>
           </div>
@@ -89,20 +89,7 @@ const AdminPasswordModal = ({ isOpen, onClose, onSuccess }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
-            <div className="flex items-start gap-3">
-              <span className="material-icons text-blue-500 text-xl">info</span>
-              <div>
-                <p className="text-sm text-blue-800 font-medium mb-1">
-                  Section réservée aux administrateurs
-                </p>
-                <p className="text-xs text-blue-700">
-                  Veuillez entrer le mot de passe administrateur pour accéder à la gestion des activités.
-                </p>
-              </div>
-            </div>
-          </div>
-
+          
           {error && (
             <div className="bg-red-50 border-l-4 border-red-400 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
               <span className="material-icons text-sm">error</span>
@@ -121,7 +108,7 @@ const AdminPasswordModal = ({ isOpen, onClose, onSuccess }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Entrez le mot de passe admin"
-                className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-pink-200 focus:border-pink-400 outline-none transition text-sm"
+                className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-200  outline-none transition text-sm"
                 disabled={isLoading}
                 autoFocus
               />
@@ -154,7 +141,7 @@ const AdminPasswordModal = ({ isOpen, onClose, onSuccess }) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl hover:from-pink-600 hover:to-purple-600 transition font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-400 to-blue-400 text-white rounded-xl hover:from-blue-400 hover:to-blue-400 transition font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>

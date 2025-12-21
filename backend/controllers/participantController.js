@@ -2,6 +2,7 @@
 const Participant = require('../models/participantModel');
 const Evenement = require('../models/evenementModel');
 const mailService = require('../services/mailService');
+const notificationService = require('../services/notificationService'); // ✅ NOUVEAU
 
 // Récupérer tous les événements publics disponibles pour participation
 const getEvenementsDisponibles = async (req, res) => {
@@ -20,7 +21,7 @@ const getEvenementsDisponibles = async (req, res) => {
   }
 };
 
-// S'inscrire à un événement avec envoi d'email de confirmation
+// S'inscrire à un événement avec envoi d'email et notification
 const inscrireParticipant = async (req, res) => {
   try {
     const { id_evenement } = req.params;
@@ -100,11 +101,25 @@ const inscrireParticipant = async (req, res) => {
       console.log('✅ Email de confirmation envoyé');
     } catch (emailError) {
       console.error('⚠️ Erreur envoi email (inscription enregistrée quand même):', emailError);
-      // On continue même si l'email échoue
+    }
+    
+    // 🔔 NOUVEAU: CRÉER NOTIFICATION IN-APP
+    try {
+      await notificationService.createInscriptionNotification(
+        email,
+        prenom,
+        nom,
+        evenement.titre,
+        evenement.code_evenement,
+        id_evenement
+      );
+      console.log('✅ Notification in-app créée');
+    } catch (notifError) {
+      console.error('⚠️ Erreur notification (inscription enregistrée quand même):', notifError);
     }
 
     res.status(201).json({
-      message: 'Inscription réussie ! Votre demande est en attente de validation. Un email de confirmation vous a été envoyé.',
+      message: 'Inscription réussie ! Votre demande est en attente de validation. Vous recevrez une confirmation par email et notification.',
       participation: nouvelleParticipation
     });
   } catch (error) {

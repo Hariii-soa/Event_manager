@@ -21,13 +21,13 @@ const validatePasswordReset = [
     .withMessage('Le mot de passe doit contenir au moins 6 caractères')
 ];
 
-// Route pour demander la réinitialisation (envoie l'email)
+// ✅ CORRECTION: Route pour demander la réinitialisation (envoie l'email)
 router.post('/request', validateResetRequest, requestPasswordReset);
 
-// Route pour réinitialiser le mot de passe
+// ✅ CORRECTION: Route pour réinitialiser le mot de passe
 router.post('/reset', validatePasswordReset, resetPassword);
 
-// Route pour vérifier la validité d'un token
+// ✅ CORRECTION: Route pour vérifier la validité d'un token
 router.get('/verify/:token', verifyResetToken);
 
 module.exports = router;

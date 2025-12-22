@@ -15,33 +15,28 @@ import ActivitesPage from './pages/ActivitesPage';
 import ConsulterPage from './pages/ConsulterPage';
 import NotificationsPage from './pages/NotificationsPage';
 import Sidebar from '@/components/sidebar/Sidebar';
-import TopBar from '@/components/layout/TopBar'; // ✅ NOUVEAU
+import TopBar from '@/components/layout/TopBar';
+import LandingPage from './pages/LandingPage';
 
-// Route protégée
+// Route protégée - redirige vers /welcome si pas connecté
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
-  return user ? children : <Navigate to="/login" replace />;
+  return user ? children : <Navigate to="/welcome" replace />;
 };
 
-// Route publique
+// Route publique - redirige vers /dashboard si connecté
 const PublicRoute = ({ children }) => {
   const { user } = useAuth();
-  return user ? <Navigate to="/" replace /> : children;
+  return user ? <Navigate to="/dashboard" replace /> : children;
 };
 
 // Layout avec Sidebar ET TopBar pour routes protégées
 const ProtectedLayout = ({ children }) => {
   return (
     <div className="flex min-h-screen bg-white">
-      {/* Sidebar - TOUJOURS VISIBLE */}
       <Sidebar />
-      
-      {/* Contenu principal avec TopBar */}
       <div className="flex-1 lg:ml-[20vw] bg-white">
-        {/* TopBar fixée en haut avec notifications */}
         <TopBar />
-        
-        {/* Contenu avec padding-top pour compenser la TopBar fixe */}
         <div className="pt-16 sm:pt-20">
           {children}
         </div>
@@ -53,7 +48,28 @@ const ProtectedLayout = ({ children }) => {
 function App() {
   return (
     <Routes>
-      {/* ===================== ROUTES PUBLIQUES - SANS SIDEBAR/TOPBAR ===================== */}
+      {/* ===================== LANDING PAGE - ROUTE PRINCIPALE ===================== */}
+      
+      {/* Landing Page - Page d'accueil publique */}
+      <Route 
+        path="/" 
+        element={
+          <PublicRoute>
+            <LandingPage />
+          </PublicRoute>
+        } 
+      />
+      
+      <Route 
+        path="/welcome" 
+        element={
+          <PublicRoute>
+            <LandingPage />
+          </PublicRoute>
+        } 
+      />
+      
+      {/* ===================== ROUTES PUBLIQUES - AUTHENTIFICATION ===================== */}
       
       <Route 
         path="/login" 
@@ -96,10 +112,11 @@ function App() {
         element={<GoogleAuthSuccess />} 
       />
 
-      {/* ===================== ROUTES PROTÉGÉES - AVEC SIDEBAR + TOPBAR ===================== */}
+      {/* ===================== ROUTES PROTÉGÉES - DASHBOARD ===================== */}
 
+      {/* Dashboard Home - après connexion */}
       <Route
-        path="/"
+        path="/dashboard"
         element={
           <ProtectedRoute>
             <ProtectedLayout>
@@ -186,8 +203,8 @@ function App() {
         }
       />
 
-      {/* Redirection par défaut vers /login */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      {/* Redirection par défaut vers landing page */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

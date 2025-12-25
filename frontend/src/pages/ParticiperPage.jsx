@@ -187,7 +187,7 @@ const ParticiperPage = () => {
                         className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                      <div className="w-full h-full bg-linear-to-br from-blue-100 to-purple-100 flex items-center justify-center">
                         <span className="material-icons text-4xl sm:text-6xl text-gray-400">event</span>
                       </div>
                     )}
@@ -221,11 +221,11 @@ const ParticiperPage = () => {
                     {/* Date et lieu */}
                     <div className="space-y-2 mb-4">
                       <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-600">
-                        <span className="material-icons text-sm flex-shrink-0">event</span>
+                        <span className="material-icons text-sm shrink-0">event</span>
                         <span className="line-clamp-1">{formatDate(event.date_evenement)}</span>
                       </div>
                       <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-600">
-                        <span className="material-icons text-sm flex-shrink-0">location_on</span>
+                        <span className="material-icons text-sm shrink-0">location_on</span>
                         <span className="line-clamp-1">{event.lieu}</span>
                       </div>
                     </div>

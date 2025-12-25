@@ -122,12 +122,12 @@ const HomePage = () => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-pink-100 to-blue-100 flex items-center justify-center">
+              <div className="w-full h-full bg-linear-to-br from-pink-100 to-blue-100 flex items-center justify-center">
                 <span className="material-icons text-9xl text-gray-400">event</span>
               </div>
             )}
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+            <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent"></div>
 
             <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 lg:p-12 text-white">
               {isFirstSlide ? (

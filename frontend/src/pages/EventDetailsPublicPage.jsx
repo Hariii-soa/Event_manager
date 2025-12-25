@@ -122,7 +122,7 @@ const EventDetailsPublicPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header avec image de couverture */}
-      <div className="relative h-64 sm:h-80 md:h-96 bg-gradient-to-br from-blue-100 to-purple-100">
+      <div className="relative h-64 sm:h-80 md:h-96 bg-linear-to-br from-blue-100 to-purple-100">
         {event.image_url ? (
           <img
             src={`http://localhost:3000${event.image_url}`}
@@ -136,7 +136,7 @@ const EventDetailsPublicPage = () => {
         )}
         
         {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent"></div>
 
         {/* Bouton retour */}
         <div className="absolute top-4 sm:top-6 left-4 sm:left-6">
@@ -246,12 +246,12 @@ const EventDetailsPublicPage = () => {
               <div className="space-y-6">
                 {/* Date */}
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
                     <span className="material-icons text-blue-600 text-sm">event</span>
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs sm:text-sm text-gray-500 mb-1">Date et heure</p>
-                    <p className="font-medium text-gray-900 text-sm break-words">
+                    <p className="font-medium text-gray-900 text-sm wrap-break-words">
                       {formatDate(event.date_evenement)}
                     </p>
                   </div>
@@ -259,18 +259,18 @@ const EventDetailsPublicPage = () => {
 
                 {/* Lieu */}
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center shrink-0">
                     <span className="material-icons text-purple-600 text-sm">location_on</span>
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs sm:text-sm text-gray-500 mb-1">Lieu de l'événement</p>
-                    <p className="font-medium text-gray-900 text-sm break-words">{event.lieu}</p>
+                    <p className="font-medium text-gray-900 text-sm wrap-break-word ">{event.lieu}</p>
                   </div>
                 </div>
 
                 {/* Capacité */}
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
                     <span className="material-icons text-green-600 text-sm">people</span>
                   </div>
                   <div className="min-w-0">
@@ -281,7 +281,7 @@ const EventDetailsPublicPage = () => {
 
                 {/* Statut */}
                 <div className="flex items-start gap-3">
-                  <div className={`w-10 h-10 ${status.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                  <div className={`w-10 h-10 ${status.color} rounded-lg flex items-center justify-center shrink-0`}>
                     <span className="material-icons text-sm">schedule</span>
                   </div>
                   <div className="min-w-0">

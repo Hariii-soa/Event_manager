@@ -217,7 +217,7 @@ const NotificationBell = () => {
           {/* Panel notifications - Responsive */}
           <div className="absolute right-0 mt-2 w-screen max-w-sm sm:max-w-md md:max-w-lg bg-white rounded-xl shadow-2xl border border-gray-200 z-50 max-h-[80vh] sm:max-h-[600px] flex flex-col">
             {/* Header - Responsive */}
-            <div className="p-3 sm:p-4 border-b border-gray-200 flex items-center justify-between bg-gradient-to-r from-blue-50 to-purple-50">
+            <div className="p-3 sm:p-4 border-b border-gray-200 flex items-center justify-between bg-linear-to-r from-blue-50 to-purple-50">
               <div>
                 <h3 className="font-bold text-gray-900 text-sm sm:text-base">Notifications</h3>
                 <p className="text-xs text-gray-500">
@@ -257,7 +257,7 @@ const NotificationBell = () => {
                   >
                     <div className="flex items-start gap-2 sm:gap-3">
                       {/* Icône - Responsive */}
-                      <div className="text-xl sm:text-2xl flex-shrink-0">
+                      <div className="text-xl sm:text-2xl shrink-0">
                         {getNotificationIcon(notif.type_notification)}
                       </div>
 
@@ -272,7 +272,7 @@ const NotificationBell = () => {
                           </h4>
                           <button
                             onClick={() => handleDelete(notif.id_notification)}
-                            className="text-gray-400 hover:text-red-500 transition flex-shrink-0"
+                            className="text-gray-400 hover:text-red-500 transition shrink-0"
                           >
                             <span className="material-icons text-sm">close</span>
                           </button>

@@ -207,7 +207,7 @@ const NotificationsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r bg-blue-200 text-blue-800 text-black px-4 sm:px-8 py-8">
+      <div className="bg-linear-to-r bg-blue-200 text-blue-800  px-4 sm:px-8 py-8">
         <div className="max-w-7xl mx-auto">
           <button
             onClick={() => navigate(-1)}
@@ -349,7 +349,7 @@ const NotificationsPage = () => {
                   <div className="p-6">
                     <div className="flex items-start gap-4">
                       {/* Icône */}
-                      <div className={`w-12 h-12 ${icon.color} rounded-full flex items-center justify-center flex-shrink-0 text-2xl`}>
+                      <div className={`w-12 h-12 ${icon.color} rounded-full flex items-center justify-center shrink-0 text-2xl`}>
                         {icon.emoji}
                       </div>
 

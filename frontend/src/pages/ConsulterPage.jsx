@@ -159,7 +159,7 @@ const ConsulterPage = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
             {/* Header du modal */}
-            <div className="bg-gradient-to-r from-pink-100 to-purple-100 px-6 py-5 flex items-center gap-4">
+            <div className="bg-linear-to-r from-pink-100 to-purple-100 px-6 py-5 flex items-center gap-4">
               <div className="w-14 h-14 bg-white/80 rounded-full flex items-center justify-center">
                 <span className="material-icons  bg-pink-200 text-3xl">person_search</span>
               </div>
@@ -180,7 +180,7 @@ const ConsulterPage = () => {
               )}
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <label className=" text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                   <span className="material-icons text-base text-gray-600">email</span>
                   Email du participant
                   <span className="text-red-500">*</span>
@@ -208,7 +208,7 @@ const ConsulterPage = () => {
                 <button
                   type="submit"
                   disabled={isSearching}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r bg-pink-300 text-white rounded-xl hover:from-pink-300 hover:to-purple-300 transition font-medium text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 px-6 py-3 bg-linear-to-r bg-pink-300 text-white rounded-xl hover:from-pink-300 hover:to-purple-300 transition font-medium text-sm disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {isSearching ? (
                     <>
@@ -244,7 +244,7 @@ const ConsulterPage = () => {
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full flex items-center justify-center">
+                  <div className="w-16 h-16 bg-linear-to-br from-pink-100 to-purple-100 rounded-full flex items-center justify-center">
                     <span className="material-icons text-pink-500 text-3xl">person</span>
                   </div>
                   <div>
@@ -306,7 +306,7 @@ const ConsulterPage = () => {
                       >
                         <div className="flex flex-col sm:flex-row">
                           {/* Image de l'événement */}
-                          <div className="relative h-48 sm:h-auto sm:w-64 flex-shrink-0">
+                          <div className="relative h-48 sm:h-auto sm:w-64 shrink-0">
                             {event.image_url ? (
                               <img
                                 src={`http://localhost:3000${event.image_url}`}
@@ -314,7 +314,7 @@ const ConsulterPage = () => {
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <div className="w-full h-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
+                              <div className="w-full h-full bg-linear-to-br from-pink-100 to-purple-100 flex items-center justify-center">
                                 <span className="material-icons text-6xl text-gray-400">event</span>
                               </div>
                             )}

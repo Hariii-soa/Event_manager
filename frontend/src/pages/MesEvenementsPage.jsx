@@ -228,7 +228,7 @@ const MesEvenementsPage = () => {
                         className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-pink-100 to-blue-100 flex items-center justify-center">
+                      <div className="w-full h-full bg-linear-to-br from-pink-100 to-blue-100 flex items-center justify-center">
                         <span className="material-icons text-6xl text-gray-400">event</span>
                       </div>
                     )}
@@ -327,7 +327,7 @@ const MesEvenementsPage = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 m-4">
             <div className="flex items-start gap-4 mb-4">
-              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center shrink-0">
                 <span className="material-icons text-red-600">warning</span>
               </div>
               <div>

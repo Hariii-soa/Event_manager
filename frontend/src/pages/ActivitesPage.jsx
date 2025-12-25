@@ -98,7 +98,7 @@ const AdminPasswordModal = ({ isOpen, onClose, onSuccess }) => {
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+            <label className=" text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
               <span className="material-icons text-base text-gray-600">lock</span>
               Mot de passe administrateur
             </label>
@@ -141,7 +141,7 @@ const AdminPasswordModal = ({ isOpen, onClose, onSuccess }) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-400 to-blue-400 text-white rounded-xl hover:from-blue-400 hover:to-blue-400 transition font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 px-6 py-3 bg-linear-to-r from-blue-400 to-blue-400 text-white rounded-xl hover:from-blue-400 hover:to-blue-400 transition font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -399,7 +399,7 @@ const ActivitesPage = () => {
     <div className="min-h-screen bg-gray-50">
       <div style={{ backgroundColor: '#F4CFDF' }} className="text-gray-900 px-4 sm:px-8 py-6 sm:py-8 shadow-lg">
         <div className="flex items-center gap-3 sm:gap-4">
-          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm flex-shrink-0">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm shrink-0">
             <span className="material-icons text-3xl sm:text-4xl">bolt</span>
           </div>
           <div>
@@ -432,7 +432,7 @@ const ActivitesPage = () => {
 
           <div className="p-4 sm:p-8">
             <div className="mb-6 sm:mb-8">
-              <label className="block text-sm font-semibold text-gray-700 mb-2 sm:mb-3 flex items-center gap-2">
+              <label className=" text-sm font-semibold text-gray-700 mb-2 sm:mb-3 flex items-center gap-2">
                 <span className="material-icons text-indigo-500">event</span>
                 Sélectionner un événement
               </label>
@@ -464,7 +464,7 @@ const ActivitesPage = () => {
               </div>
 
               {selectedEvenement && (
-                <div className="mt-4 p-4 sm:p-5 bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl border-2 border-pink-200">
+                <div className="mt-4 p-4 sm:p-5 bg-linear-to-r from-pink-50 to-purple-50 rounded-xl border-2 border-pink-200">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex-1">
                       <p className="text-xs sm:text-sm text-gray-600 mb-1">Événement sélectionné</p>
@@ -603,7 +603,7 @@ const ActivitesPage = () => {
               )
             ) : (
               <div className="text-center py-20">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-linear-to-br from-pink-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <span className="material-icons text-5xl sm:text-6xl text-pink-400">event</span>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-700 mb-2">Sélectionnez un événement</h3>

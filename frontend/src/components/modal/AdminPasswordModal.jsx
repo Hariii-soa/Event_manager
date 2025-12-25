@@ -112,7 +112,7 @@ const AdminPasswordModal = ({ isOpen, onClose, onSuccess }) => {
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+            <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
               <span className="material-icons text-base text-gray-600">lock</span>
               Mot de passe administrateur
             </label>
@@ -159,7 +159,7 @@ const AdminPasswordModal = ({ isOpen, onClose, onSuccess }) => {
             <button
               onClick={handleSubmit}
               disabled={isLoading}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl hover:from-pink-600 hover:to-purple-600 transition font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 px-6 py-3 bg-linear-to-r from-pink-500 to-purple-500 text-white rounded-xl hover:from-pink-600 hover:to-purple-600 transition font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>

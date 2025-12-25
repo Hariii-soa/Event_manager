@@ -33,7 +33,7 @@ const LandingPage = () => {
               </button>
               <button
                 onClick={() => navigate('/register')}
-                className="px-6 py-2.5 bg-gradient-to-r from-pink-200 to-purple-300 text-white rounded-lg hover:from-pink-200 hover:to-purple-300 transition font-medium"
+                className="px-6 py-2.5 bg-linear-to-r from-pink-200 to-purple-300 text-white rounded-lg hover:from-pink-200 hover:to-purple-300 transition font-medium"
               >
                 Commencer gratuitement
               </button>
@@ -48,7 +48,7 @@ const LandingPage = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-linear-to-br from-pink-50 via-purple-50 to-blue-50">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
@@ -59,7 +59,7 @@ const LandingPage = () => {
               
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                 Consultez vos événements en toute
-                <span className="bg-gradient-to-r from-pink-200 to-purple-300 bg-clip-text text-transparent"> simplicité</span>
+                <span className="bg-linear-to-r from-pink-200 to-purple-300 bg-clip-text text-transparent"> simplicité</span>
               </h1>
               
               <p className="text-lg sm:text-xl text-gray-600 mb-8 leading-relaxed">
@@ -70,7 +70,7 @@ const LandingPage = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={() => navigate('/register')}
-                  className="px-8 py-4 bg-gradient-to-r from-pink-200 to-purple-300 text-white rounded-xl hover:from-pink-200 hover:to-purple-300 transition font-semibold text-lg shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                  className="px-8 py-4 bg-linear-to-r from-pink-200 to-purple-300 text-white rounded-xl hover:from-pink-200 hover:to-purple-300 transition font-semibold text-lg shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                 >
                   <span className="material-icons">rocket_launch</span>
                   Commencer gratuitement
@@ -133,7 +133,7 @@ const LandingPage = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Feature Card 1 */}
-            <div className="bg-gradient-to-br from-pink-50 to-pink-100 p-6 rounded-2xl hover:shadow-lg transition">
+            <div className="bg-linear-to-br from-pink-50 to-pink-100 p-6 rounded-2xl hover:shadow-lg transition">
               <div className="w-14 h-14 bg-pink-200 rounded-xl flex items-center justify-center mb-4">
                 <span className="material-icons text-white text-2xl">event</span>
               </div>
@@ -146,7 +146,7 @@ const LandingPage = () => {
             
 
             {/* Feature Card 3 */}
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl hover:shadow-lg transition">
+            <div className="bg-linear-to-br from-blue-50 to-blue-100 p-6 rounded-2xl hover:shadow-lg transition">
               <div className="w-14 h-14 bg-blue-300 rounded-xl flex items-center justify-center mb-4">
                 <span className="material-icons text-white text-2xl">notifications</span>
               </div>
@@ -157,7 +157,7 @@ const LandingPage = () => {
             </div>
 
             {/* Feature Card 4 */}
-            <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-2xl hover:shadow-lg transition">
+            <div className="bg-linear-to-br from-green-50 to-green-100 p-6 rounded-2xl hover:shadow-lg transition">
               <div className="w-14 h-14 bg-green-200 rounded-xl flex items-center justify-center mb-4">
                 <span className="material-icons text-white text-2xl">analytics</span>
               </div>
@@ -186,7 +186,7 @@ const LandingPage = () => {
             {/* Step 1 */}
             <div className="relative">
               <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition">
-                <div className="w-16 h-16 bg-gradient-to-r from-pink-300 to-purple-300 rounded-full flex items-center justify-center mb-6 text-white text-2xl font-bold">
+                <div className="w-16 h-16 bg-linear-to-r from-pink-300 to-purple-300 rounded-full flex items-center justify-center mb-6 text-white text-2xl font-bold">
                   1
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3">Consultez les événements disponibles</h3>
@@ -204,7 +204,7 @@ const LandingPage = () => {
             {/* Step 2 */}
             <div className="relative">
               <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition">
-                <div className="w-16 h-16 bg-gradient-to-r from-purple-300 to-blue-100 rounded-full flex items-center justify-center mb-6 text-white text-2xl font-bold">
+                <div className="w-16 h-16 bg-linear-to-r from-purple-300 to-blue-100 rounded-full flex items-center justify-center mb-6 text-white text-2xl font-bold">
                   2
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3">Inscrivez-vous selon vos choix</h3>
@@ -222,7 +222,7 @@ const LandingPage = () => {
             {/* Step 3 */}
             <div>
               <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-300 to-green-200 rounded-full flex items-center justify-center mb-6 text-white text-2xl font-bold">
+                <div className="w-16 h-16 bg-linear-to-r from-blue-300 to-green-200 rounded-full flex items-center justify-center mb-6 text-white text-2xl font-bold">
                   3
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3">Consulter votre taux de participation</h3>
@@ -236,7 +236,7 @@ const LandingPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-pink-100 to-purple-100">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-linear-to-r from-pink-100 to-purple-100">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-black mb-6">
             Prêt à simplifier vos événements ?

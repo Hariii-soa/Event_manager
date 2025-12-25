@@ -29,8 +29,8 @@ const TopBar = () => {
 
       return () => clearInterval(interval);
     }
-  }, [userEmail]);
-
+  }, [userEmail]); 
+  
   const getToken = () => {
     try {
       return localStorage.getItem('token');
@@ -239,7 +239,7 @@ const TopBar = () => {
               {/* Panel notifications */}
               <div className="absolute right-0 mt-2 w-screen max-w-sm sm:max-w-md bg-white rounded-xl shadow-2xl border border-gray-200 z-50 max-h-[85vh] sm:max-h-[600px] flex flex-col">
                 {/* Header */}
-                <div className="p-3 sm:p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+                <div className="p-3 sm:p-4 border-b border-gray-200 bg-linear-to-r from-blue-50 to-purple-50">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <span className="material-icons text-purple-600">notifications_active</span>
@@ -290,7 +290,7 @@ const TopBar = () => {
                       >
                         <div className="flex items-start gap-2 sm:gap-3">
                           {/* Icône */}
-                          <div className="text-xl sm:text-2xl flex-shrink-0 mt-1">
+                          <div className="text-xl sm:text-2xl shrink-0 mt-1">
                             {getNotificationIcon(notif.type_notification)}
                           </div>
 
@@ -300,12 +300,12 @@ const TopBar = () => {
                               <h4 className="font-semibold text-xs sm:text-sm text-gray-900 line-clamp-1 flex items-center gap-2">
                                 {notif.titre}
                                 {!notif.lu && (
-                                  <span className="inline-block w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>
+                                  <span className="inline-block w-2 h-2 bg-blue-500 rounded-full shrink-0"></span>
                                 )}
                               </h4>
                               <button
                                 onClick={() => handleDelete(notif.id_notification)}
-                                className="text-gray-400 hover:text-red-500 transition flex-shrink-0"
+                                className="text-gray-400 hover:text-red-500 transition shrink-0"
                               >
                                 <span className="material-icons text-sm">close</span>
                               </button>

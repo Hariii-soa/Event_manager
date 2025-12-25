@@ -121,7 +121,7 @@ const InscriptionModal = ({ isOpen, onClose, event, onSuccess }) => {
         {/* Header */}
         <div className="sticky top-0 bg-pink-50 px-4 sm:px-6 py-4 flex items-center justify-between rounded-t-2xl border-b border-pink-100">
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center shrink-0">
               <span className="material-icons text-pink-600 text-sm">person_add</span>
             </div>
             <div className="min-w-0">
@@ -135,7 +135,7 @@ const InscriptionModal = ({ isOpen, onClose, event, onSuccess }) => {
             type="button"
             onClick={handleClose}
             disabled={isLoading}
-            className="text-gray-600 hover:text-gray-800 transition disabled:opacity-50 flex-shrink-0 ml-2"
+            className="text-gray-600 hover:text-gray-800 transition disabled:opacity-50 shrink-0 ml-2"
           >
             <span className="material-icons text-sm">close</span>
           </button>
@@ -145,21 +145,21 @@ const InscriptionModal = ({ isOpen, onClose, event, onSuccess }) => {
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start gap-2 text-sm">
-              <span className="material-icons text-sm flex-shrink-0">error</span>
+              <span className="material-icons text-sm shrink-0">error</span>
               <span>{error}</span>
             </div>
           )}
 
           {success && (
             <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start gap-2 text-sm">
-              <span className="material-icons text-sm flex-shrink-0">check_circle</span>
+              <span className="material-icons text-sm shrink-0">check_circle</span>
               <span>{success}</span>
             </div>
           )}
 
           {/* Champ Code (lecture seule) */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+            <label className=" text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
               <span className="material-icons text-sm">tag</span>
               Code
             </label>
@@ -173,7 +173,7 @@ const InscriptionModal = ({ isOpen, onClose, event, onSuccess }) => {
 
           {/* Champ Prénom */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+            <label className="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
               <span className="material-icons text-sm">person</span>
               Prénom
             </label>
@@ -191,7 +191,7 @@ const InscriptionModal = ({ isOpen, onClose, event, onSuccess }) => {
 
           {/* Champ Nom */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+            <label className=" text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
               <span className="material-icons text-sm">badge</span>
               Nom
             </label>
@@ -209,7 +209,7 @@ const InscriptionModal = ({ isOpen, onClose, event, onSuccess }) => {
 
           {/* Champ Email */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+            <label className="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
               <span className="material-icons text-sm">email</span>
               Email
             </label>
@@ -227,7 +227,7 @@ const InscriptionModal = ({ isOpen, onClose, event, onSuccess }) => {
 
           {/* Champ Téléphone */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+            <label className="text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
               <span className="material-icons text-sm">phone</span>
               Téléphone
             </label>

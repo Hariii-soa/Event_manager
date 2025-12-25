@@ -119,7 +119,7 @@ const ResetPasswordPage = () => {
   // État de vérification du token
   if (isVerifying) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-purple-50 to-blue-50">
         <div className="text-center">
           <span className="material-icons text-6xl text-blue-500 animate-spin mb-4">refresh</span>
           <p className="text-gray-600">Vérification du lien...</p>
@@ -131,7 +131,7 @@ const ResetPasswordPage = () => {
   // Token invalide
   if (!tokenValid) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-purple-50 to-blue-50 px-4">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 text-center">
           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="material-icons text-5xl text-red-500">error</span>
@@ -151,7 +151,7 @@ const ResetPasswordPage = () => {
 
   // Formulaire de réinitialisation
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-purple-50 to-blue-50 px-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8">
         {/* Logo */}
         <div className="flex items-center gap-3 mb-8">

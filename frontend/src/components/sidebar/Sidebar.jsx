@@ -56,7 +56,7 @@ const Sidebar = () => {
             className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition"
             onClick={() => handleNavigation('/')}
           >
-            <div className="w-14 h-14 sm:w-20 sm:h-20 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <div className="w-14 h-14 sm:w-20 sm:h-20 bg-purple-100 rounded-full flex items-center justify-center shrink-0">
               <img src="/logo.png" alt="Evenia" className="w-14 h-14 sm:w-20 sm:h-20" />
             </div>
             <div>
@@ -173,7 +173,7 @@ const Sidebar = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 m-4">
             <div className="flex items-start gap-4 mb-4">
-              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center shrink-0">
                 <span className="material-icons text-red-600">warning</span>
               </div>
               <div>

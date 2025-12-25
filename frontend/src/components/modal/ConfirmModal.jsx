@@ -9,7 +9,7 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, isLoading = 
       <div className="w-full max-w-md p-6 m-4 bg-white shadow-2xl rounded-2xl">
         {/* Icône et titre */}
         <div className="flex items-start gap-4 mb-4">
-          <div className="flex-shrink-0 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+          <div className="shrink-0 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
             <span className="material-icons text-red-600">warning</span>
           </div>
           <div className="flex-1">

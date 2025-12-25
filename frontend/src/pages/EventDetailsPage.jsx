@@ -178,7 +178,7 @@ const EventDetailsPage = () => {
   return (
     <div className="w-full bg-gray-50">
       {/* Header avec image de couverture */}
-      <div className="relative h-80 sm:h-96 bg-gradient-to-br from-pink-100 to-blue-100">
+      <div className="relative h-80 sm:h-96 bg-linear-to-br from-pink-100 to-blue-100">
         {event.image_url ? (
           <img
             src={`http://localhost:3000${event.image_url}`}
@@ -192,7 +192,7 @@ const EventDetailsPage = () => {
         )}
 
         {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent"></div>
 
         {/* Boutons d'action */}
         <div className="absolute top-6 left-6">
@@ -286,7 +286,7 @@ const EventDetailsPage = () => {
               <div className="space-y-6">
                 {/* Date */}
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center shrink-0">
                     <span className="material-icons text-pink-600">event</span>
                   </div>
                   <div>
@@ -297,7 +297,7 @@ const EventDetailsPage = () => {
 
                 {/* Lieu */}
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
                     <span className="material-icons text-blue-600">location_on</span>
                   </div>
                   <div>
@@ -308,7 +308,7 @@ const EventDetailsPage = () => {
 
                 {/* Capacité */}
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center shrink-0">
                     <span className="material-icons text-purple-600">people</span>
                   </div>
                   <div>
@@ -319,7 +319,7 @@ const EventDetailsPage = () => {
 
                 {/* Statut */}
                 <div className="flex items-start gap-3">
-                  <div className={`w-10 h-10 ${status.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                  <div className={`w-10 h-10 ${status.color} rounded-lg flex items-center justify-center shrink-0`}>
                     <span className="material-icons">schedule</span>
                   </div>
                   <div>
@@ -351,7 +351,7 @@ const EventDetailsPage = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 m-4">
             <div className="flex items-start gap-4 mb-4">
-              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center shrink-0">
                 <span className="material-icons text-red-600">warning</span>
               </div>
               <div>
